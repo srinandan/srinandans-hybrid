@@ -1,0 +1,793 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    istio-injection: enabled
+    istio.io/rev: asm-173-6
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: apps
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: inventory
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: inventory
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: inventory
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: inventory
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "8080"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: inventory
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "false"
+        image: gcr.io/nandanks-151422/inventory:v1.83-7-g4ca5fef@sha256:07d6b079a34f35c951677fdcbe28f9cc9cb03a366ef6fd0322bc00a2108bc34a
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8090
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: inventory
+        ports:
+        - containerPort: 8080
+        - containerPort: 8090
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: orders
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: orders
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: orders
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: orders
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "8080"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: orders
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: INVENTORY
+          value: http://inventory.apps.svc.cluster.local:8080
+        - name: DEBUG
+          value: "false"
+        image: gcr.io/nandanks-151422/orders:v1.83-7-g4ca5fef@sha256:9c4c699c2024b1f910a74fa1e9c9dafd27ae684d652571ba1deba870ca05195d
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8090
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: orders
+        ports:
+        - containerPort: 8080
+        - containerPort: 8090
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tracking
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: tracking
+  namespace: apps
+spec:
+  ports:
+  - name: grpc
+    port: 50051
+  selector:
+    app: tracking
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: tracking
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tracking
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "50051"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: tracking
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "true"
+        image: gcr.io/nandanks-151422/tracking:v1.83-7-g4ca5fef@sha256:fb56911e668a373409f817f8396baa1a9987b663c4d98b9f102a02d69bf568a5
+        imagePullPolicy: IfNotPresent
+        name: tracking
+        ports:
+        - containerPort: 50051
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tracking-client
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: tracking-client
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: tracking-client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: tracking-client
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tracking-client
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "8080"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: tracking-client
+        app.kubernetes.io/managed-by: skaffold
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "true"
+        - name: TRACKING
+          value: tracking.apps.svc.cluster.local:50051
+        image: gcr.io/nandanks-151422/tracking-client:v1.83-7-g4ca5fef@sha256:840ce24bc81c6a1ee23905bf8c68d5423697d0e3b1d89417ae2b0b8ed0548dff
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8090
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: tracking-client
+        ports:
+        - containerPort: 8080
+        - containerPort: 8090
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: orders-gql
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: orders-gql
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: orders-gql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: orders-gql
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-gql
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "8080"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: orders-gql
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "true"
+        - name: ORDERS
+          value: http://orders.apps.svc.cluster.local:8080
+        image: gcr.io/nandanks-151422/orders-gql:v1.83-7-g4ca5fef@sha256:01fa6200bf3f071bb41a08795d33954f7b0ff1d1dc9890a733ad8f7ce9f0dcfd
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: orders-gql
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: customers
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: customers
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: customers
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: customers
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: customers
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "8080"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: customers
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "false"
+        image: gcr.io/nandanks-151422/customers:v1.83-7-g4ca5fef@sha256:ecf703daa78f2331631f72c3c21f27678c47aab42bbe7d45e5289d03944cfd8f
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: customers
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 50m
+            ephemeral-storage: 5000Ki
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: websockets
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: websockets
+  namespace: apps
+spec:
+  ports:
+  - name: http
+    port: 3000
+    targetPort: 3000
+  selector:
+    app: websockets
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: websockets
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: websockets
+  template:
+    metadata:
+      annotations:
+        readiness.status.sidecar.istio.io/applicationPorts: "3000"
+        readiness.status.sidecar.istio.io/initialDelaySeconds: "20"
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+      labels:
+        app: websockets
+        app.kubernetes.io/managed-by: skaffold
+        managed-by: apigee
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /etc/secret/client_secret.json
+        - name: DEBUG
+          value: "false"
+        image: gcr.io/nandanks-151422/websockets:v1.83-7-g4ca5fef@sha256:d5a604c8ff934e40e5b506801f1ba6556998024d241ddbca1701e3232a17c92d
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 20
+          periodSeconds: 5
+        name: websockets
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+            drop:
+            - ALL
+          runAsGroup: 20000
+          runAsNonRoot: true
+          runAsUser: 20001
+        volumeMounts:
+        - mountPath: /etc/secret
+          name: svc-account-volume
+          readOnly: true
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
+      volumes:
+      - name: svc-account-volume
+        secret:
+          defaultMode: 420
+          optional: true
+          secretName: google-auth-svc-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: client
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: client
+  namespace: apps
+spec:
+  clusterIP: None
+  selector:
+    app: client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: skaffold
+    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+  name: client
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+        app.kubernetes.io/managed-by: skaffold
+        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        version: v1
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apps
+            weight: 100
+      containers:
+      - image: gcr.io/nandanks-151422/client:v1.83-7-g4ca5fef-dirty@sha256:47071243e5217e65e97685ca1559117bc22cb36b565db95b06c000c27fd06a09
+        imagePullPolicy: Always
+        name: client
+        resources:
+          limits:
+            cpu: 50m
+            memory: 128Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+      imagePullSecrets:
+      - name: gcrsecret
+      serviceAccountName: apps
