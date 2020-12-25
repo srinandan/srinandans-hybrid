@@ -5,7 +5,7 @@ metadata:
     app.kubernetes.io/managed-by: skaffold
     istio-injection: enabled
     istio.io/rev: asm-173-6
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: apps
 ---
 apiVersion: v1
@@ -14,7 +14,7 @@ metadata:
   labels:
     app: inventory
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: inventory
   namespace: apps
 spec:
@@ -30,7 +30,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: inventory
   namespace: apps
 spec:
@@ -49,7 +49,7 @@ spec:
         app: inventory
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -119,7 +119,7 @@ metadata:
   labels:
     app: orders
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: orders
   namespace: apps
 spec:
@@ -135,7 +135,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: orders
   namespace: apps
 spec:
@@ -154,7 +154,7 @@ spec:
         app: orders
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -226,7 +226,7 @@ metadata:
   labels:
     app: tracking
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: tracking
   namespace: apps
 spec:
@@ -241,7 +241,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: tracking
   namespace: apps
 spec:
@@ -259,7 +259,7 @@ spec:
         app: tracking
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -322,7 +322,7 @@ metadata:
   labels:
     app: tracking-client
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: tracking-client
   namespace: apps
 spec:
@@ -338,7 +338,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: tracking-client
   namespace: apps
 spec:
@@ -356,7 +356,7 @@ spec:
       labels:
         app: tracking-client
         app.kubernetes.io/managed-by: skaffold
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -427,7 +427,7 @@ metadata:
   labels:
     app: orders-gql
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: orders-gql
   namespace: apps
 spec:
@@ -443,7 +443,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: orders-gql
   namespace: apps
 spec:
@@ -461,7 +461,7 @@ spec:
         app: orders-gql
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -532,7 +532,7 @@ metadata:
   labels:
     app: customers
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: customers
   namespace: apps
 spec:
@@ -548,7 +548,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: customers
   namespace: apps
 spec:
@@ -567,7 +567,7 @@ spec:
         app: customers
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -636,7 +636,7 @@ metadata:
   labels:
     app: websockets
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: websockets
   namespace: apps
 spec:
@@ -652,7 +652,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: websockets
   namespace: apps
 spec:
@@ -670,7 +670,7 @@ spec:
         app: websockets
         app.kubernetes.io/managed-by: skaffold
         managed-by: apigee
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -738,7 +738,7 @@ metadata:
   labels:
     app: client
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: client
   namespace: apps
 spec:
@@ -751,7 +751,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/managed-by: skaffold
-    skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+    skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
   name: client
   namespace: apps
 spec:
@@ -764,7 +764,7 @@ spec:
       labels:
         app: client
         app.kubernetes.io/managed-by: skaffold
-        skaffold.dev/run-id: 9cb8d48d-37c0-427b-a4da-cf8fe87e4121
+        skaffold.dev/run-id: bfc916b3-cfcd-4c6f-ad4d-7a4377d2ff33
         version: v1
     spec:
       affinity:
@@ -778,7 +778,7 @@ spec:
                 - apps
             weight: 100
       containers:
-      - image: gcr.io/nandanks-151422/client:v1.83-7-g4ca5fef-dirty@sha256:47071243e5217e65e97685ca1559117bc22cb36b565db95b06c000c27fd06a09
+      - image: gcr.io/nandanks-151422/client:v1.83-7-g4ca5fef@sha256:28ef8291c6714cbee7b2de560dfd12e67d4fb7f31c9cbe02b80b047946a76de6
         imagePullPolicy: Always
         name: client
         resources:
