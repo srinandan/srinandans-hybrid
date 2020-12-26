@@ -1,0 +1,64 @@
+org: "srinandans-hybrid"
+instanceID: "us-west1"
+
+nodeSelector:
+  requiredForScheduling: true
+
+imagePullSecrets:
+  - name: gcrsecret
+
+k8sCluster:
+  name: "srinandans-hybrid"
+  region: "us-west1"
+gcp:
+  projectID: "nandanks-151422"
+  name: "srinandans-hybrid"
+  region: "us-west1"
+  workloadIdentityEnabled: true
+
+virtualhosts:
+  - name: default
+    minTLSProtocolVersion: "1.3"
+    maxTLSProtocolVersion: "1.3"
+    sslSecret: srinandans-hybrid-default
+  - name: internal
+    minTLSProtocolVersion: "1.2"
+    maxTLSProtocolVersion: "1.2"
+    tlsMode: MUTUAL
+    sslSecret: srinandans-hybrid-internal
+
+envs:
+  - name: prod1
+  - name: prod2
+
+
+synchronizer:
+ replicaCountMin: 1
+ replicaCountMax: 1
+ resources:
+   requests:
+     cpu: 100m
+     memory: 256Mi
+
+runtime:
+ replicaCountMin: 1
+ replicaCountMax: 1
+ resources:
+   requests:
+     cpu: 250m
+     memory: 256Mi
+
+udca:
+ replicaCountMin: 1
+ replicaCountMax: 1
+ resources:
+   requests:
+     cpu: 100m
+     memory: 256Mi
+ fluentd:
+   resources:
+     limits:
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
