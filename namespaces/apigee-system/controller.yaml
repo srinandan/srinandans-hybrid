@@ -1,0 +1,353 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: apigee-system
+  namespace: apigee-system
+spec:
+  mtls:
+    mode: DISABLE
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: apigee-leader-election-role
+  namespace: apigee-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - configmaps/status
+  verbs:
+  - get
+  - update
+  - patch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: apigee-leader-election-rolebinding
+  namespace: apigee-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: apigee-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: apigee-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: apigee-controller-manager-metrics-service
+  namespace: apigee-system
+spec:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigee-webhook-service
+  namespace: apigee-system
+spec:
+  ports:
+  - port: 443
+    targetPort: 9443
+  selector:
+    control-plane: controller-manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: apigee-controller-manager
+  namespace: apigee-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 998
+        runAsUser: 999
+      imagePullSecrets:
+      - name: gcrsecret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apigee-runtime
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: google/apigee-kube-rbac-proxy:v0.4.1
+        imagePullPolicy: IfNotPresent
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --metrics-addr=127.0.0.1:8080
+        - --enable-leader-election
+        - --apigee-runtime-type=hybrid
+        - --log-level=info
+        - --enable-webhooks=true
+        - --enable-controllers=true
+        command:
+        - /manager
+        image: us.gcr.io/google.com/edge-ci/integration/eda/apigee-operators/1.4.0/controllers:20350_a76683f
+        imagePullPolicy: IfNotPresent
+        name: manager
+        ports:
+        - containerPort: 9443
+          name: webhook-server
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: apigee-serving-cert
+  namespace: apigee-system
+spec:
+  dnsNames:
+  - apigee-webhook-service.apigee-system.svc
+  - apigee-webhook-service.apigee-system.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: apigee-selfsigned-issuer
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: apigee-selfsigned-issuer
+  namespace: apigee-system
+spec:
+  selfSigned: {}
+---
+# This is the service account that will be used by the job for configuring CA and Cluster Issuer.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee
+  namespace: apigee-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: apigee-config
+  namespace: apigee-system
+data:
+  install-apigee-ca.sh: |-
+    #!/bin/sh
+
+    set -x
+
+    if [ "$#" -ne "1" ]; then
+        echo "first argument should be path to custom resource yaml"
+        exit 1
+    fi
+
+    pathToResourceYAML=${1}
+
+    kubectl -n cert-manager get secret apigee-ca 2>/dev/null
+    if [ "$?" -ne 0 ]; then
+        echo "apigee-ca does not exist therefore creating in cert-manager namespace..."
+        kubectl apply -f ${pathToResourceYAML}
+    fi
+    sleep 5
+  install-apigee-ca-issuer.sh: |-
+    #!/bin/sh
+
+    set -x
+
+    if [ "$#" -ne "1" ]; then
+        echo "first argument should be path to custom resource yaml"
+        exit 1
+    fi
+
+    pathToResourceYAML=${1}
+
+    # wait until issuer crd is available.
+    while true; do
+      kubectl get crd clusterissuers.cert-manager.io 2>/dev/null
+      echo "$?"
+      if [ "$?" -eq 0 ]; then
+          break
+      fi
+      echo "waiting for clusterissuers.cert-manager.io..."
+      sleep 1
+    done
+
+    kubectl get clusterissuers apigee-ca-issuer 2>/dev/null
+    if [ "$?" -ne 0 ]; then
+        echo "apigee-ca-issuer clusterissuers does not exist therefore creating..."
+        echo "checking apigee-ca secret..."
+        while true; do
+          kubectl -n cert-manager get secret apigee-ca 2>/dev/null
+          if [ "$?" -eq 0 ]; then
+              break
+          fi
+          sleep 1
+        done
+        sleep 5
+        kubectl apply -f ${pathToResourceYAML}
+    fi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: apigee-resources-install
+  namespace: apigee-system
+spec:
+  template:
+    metadata:
+      name: apigee-resources-install
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 998
+        runAsUser: 999
+      serviceAccountName: apigee
+      imagePullSecrets:
+      - name: gcrsecret
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: cloud.google.com/gke-nodepool
+                operator: In
+                values:
+                - apigee-runtime
+      containers:
+        - name: apigee-ca
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/1.4.0/installer:20350_a76683f"
+          imagePullPolicy: IfNotPresent
+          command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca.sh", "/tmp/apigee-config/apigee-ca.yaml" ]
+          volumeMounts:
+            - mountPath: "/tmp/apigee-config"
+              name: tmp-apigee-configmap
+        - name: apigee-ca-issuer
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/1.4.0/installer:20350_a76683f"
+          imagePullPolicy: IfNotPresent
+          command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca-issuer.sh", "/tmp/apigee-config/apigee-ca-issuer.yaml" ]
+          volumeMounts:
+            - mountPath: "/tmp/apigee-config"
+              name: tmp-apigee-configmap
+      volumes:
+        - name: tmp-apigee-configmap
+          configMap:
+            name: "apigee-config"
+      restartPolicy: OnFailure
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+                      - ppc64le
+                      - s390x
+              - matchExpressions:
+                  - key: cloud.google.com/gke-nodepool
+                    operator: In
+                    values:
+                      - apigee-runtime
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 2
+              preference:
+                matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+            - weight: 2
+              preference:
+                matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - ppc64le
+            - weight: 2
+              preference:
+                matchExpressions:
+                  - key: beta.kubernetes.io/arch
+                    operator: In
+                    values:
+                      - s390x
+---
