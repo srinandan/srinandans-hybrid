@@ -1,0 +1,320 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-runtime-srinandans-hybr-prod2-8dd9313-sa
+  namespace: apigee
+  annotations:
+    iam.gke.io/gcp-service-account: apigee-runtime@nandanks-151422.iam.gserviceaccount.com
+  labels:
+    env: prod1
+    org: srinandans-hybrid  
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-synchronizer-srinandans-hybr-prod2-8dd9313-sa
+  namespace: apigee
+  annotations:
+    iam.gke.io/gcp-service-account: apigee-sync@nandanks-151422.iam.gserviceaccount.com
+  labels:
+    env: prod1
+    org: srinandans-hybrid  
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-udca-srinandans-hybr-prod2-8dd9313-sa
+  namespace: apigee
+  annotations:
+    iam.gke.io/gcp-service-account: apigee-udca@nandanks-151422.iam.gserviceaccount.com
+  labels:
+    env: prod1
+    org: srinandans-hybrid  
+---
+apiVersion: apigee.cloud.google.com/v1alpha1
+kind: ApigeeEnvironment
+metadata:
+  name: srinandans-hybr-prod2-8dd9313
+  namespace: apigee
+release:
+  forceUpdate: true
+spec:
+  imagePullSecrets:
+    - name: gcrsecret
+  name: prod2
+  organizationRef: srinandans-hybr-cb84b88
+  components:
+    synchronizer:
+      podServiceAccountName: apigee-synchronizer-srinandans-hybr-prod2-8dd9313-sa
+      nodeAffinityRequired: true
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: cloud.google.com/gke-nodepool
+              operator: In
+              values:
+              - apigee-runtime
+      version: "v140rc4"
+      autoScaler:
+        minReplicas: 1
+        maxReplicas: 1
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 75
+      initContainers:
+      - name: apigee-cassandra-schema-readiness
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        imagePullPolicy: "IfNotPresent"
+      containers:
+      - name: apigee-synchronizer
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-synchronizer/1.4.0/apigee-synchronizer:21256_28e4824"
+        imagePullPolicy: "IfNotPresent"
+        livenessProbe:
+          httpGet:
+            path: /v1/probes/live
+            scheme: HTTPS
+            port: 8843
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 12
+        readinessProbe:
+          httpGet:
+            path: /v1/probes/ready
+            scheme: HTTPS
+            port: 8843
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      - name: "apigee-authz"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 100
+          runAsGroup: 1000
+          privileged: false
+        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 7091
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 7091
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+    udca:
+      podServiceAccountName: apigee-udca-srinandans-hybr-prod2-8dd9313-sa
+      nodeAffinityRequired: true
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: cloud.google.com/gke-nodepool
+              operator: In
+              values:
+              - apigee-runtime
+      version: "v140rc4"
+      replicas: 1
+      autoScaler:
+        minReplicas: 1
+        maxReplicas: 1
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 75
+      initContainers:
+      - name: apigee-tls-readiness
+        image: "us.gcr.io/google.com/edge-ci/e2e/uap/apigee-udca/1.4.0:1.4.0-rc2"
+        imagePullPolicy: "IfNotPresent"
+      containers:
+      - name: apigee-udca
+        image: "us.gcr.io/google.com/edge-ci/e2e/uap/apigee-udca/1.4.0:1.4.0-rc2"
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: "NOOP_MODE"
+          value: "false"
+        livenessProbe:
+          httpGet:
+            path: /v1/probes/live
+            port: 7070
+            scheme: HTTPS
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+      - name: "apigee-authz"
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 100
+          runAsGroup: 1000
+          privileged: false
+        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
+        imagePullPolicy: "IfNotPresent"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 128Mi
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 7091
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 7091
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+      - name: "apigee-fluentd"
+        image: "us.gcr.io/google.com/edge-ci/develop/thirdparty/apigee-stackdriver-logging-agent/master:20029_883200d"
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            memory: 128Mi
+    runtime:
+      podServiceAccountName: apigee-runtime-srinandans-hybr-prod2-8dd9313-sa
+      nodeAffinityRequired: true
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: cloud.google.com/gke-nodepool
+              operator: In
+              values:
+              - apigee-runtime
+      version: "v140rc4"
+      replicas: 1
+      autoScaler:
+        minReplicas: 1
+        maxReplicas: 1
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 75
+      initContainers:
+      - name: apigee-cassandra-schema-readiness
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        imagePullPolicy: "IfNotPresent"
+      containers:
+      - name: apigee-runtime
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.4.0/apigee-runtime:21256_28e4824"
+        imagePullPolicy: "IfNotPresent"
+        env:
+        - name: "SRINANDANS_HYBRID_KMS_ENCRYPTION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: "srinandans-hybr-prod2-8dd9313-encryption-keys"
+              key: kmsEncryptionKey
+        - name: "SRINANDANS_HYBRID_PROD2_CACHE_ENCRYPTION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: "srinandans-hybr-prod2-8dd9313-encryption-keys"
+              key: cacheEncryptionKey
+        - name: "SRINANDANS_HYBRID_PROD2_KVM_ENCRYPTION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: "srinandans-hybr-prod2-8dd9313-encryption-keys"
+              key: envKvmEncryptionKey
+        - name: "SRINANDANS_HYBRID_KVM_ENCRYPTION_KEY"
+          valueFrom:
+            secretKeyRef:
+              name: "srinandans-hybr-prod2-8dd9313-encryption-keys"
+              key: kvmEncryptionKey
+        livenessProbe:
+          httpGet:
+            path: "/v1/probes/live"
+            scheme: HTTPS
+            port: 8843
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 12
+        readinessProbe:
+          httpGet:
+            path: /v1/probes/ready
+            scheme: HTTPS
+            port: 8843
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 2
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        volumeMounts:
+        - name: java-sec-policy-volume
+          readOnly: true
+          mountPath: /opt/apigee/apigee-runtime/security
+        - name: policy-secret-volume
+          readOnly: true
+          mountPath: /opt/apigee/apigee-runtime/policy-secrets
+      volumes:
+      - name: java-sec-policy-volume
+        secret:
+          secretName: "srinandans-hybrid-prod2-java-sec-policy"
+          optional: true
+      - name: policy-secret-volume
+        secret:
+          secretName: "srinandans-hybrid-prod2-policy-secret"
+          optional: true
+
