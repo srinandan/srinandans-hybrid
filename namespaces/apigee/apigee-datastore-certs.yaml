@@ -18,15 +18,16 @@ metadata:
   name: apigee-cassandra-default
   namespace: apigee
 spec:
-  secretName: apigee-cassandra-default-tls
-  issuerRef:
-    kind: ClusterIssuer
-    name: apigee-ca-issuer
   commonName: apigee-cassandra-default.apigee.svc.cluster.local
   dnsNames:
   - apigee-cassandra-default.apigee.svc.cluster.local
+  issuerRef:
+    kind: ClusterIssuer
+    name: apigee-ca-issuer
+  secretName: apigee-cassandra-default-tls
   usages:
   - digital signature
   - key encipherment
   - client auth
   - server auth
+---
