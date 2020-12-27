@@ -9,35 +9,39 @@ This repo contains Kubernetes manifests for [Apigee hybrid](https://cloud.google
 * Organization: `srinandans-hybrid`
 * Environments: `prod1` and `prod2`
 
+Apigee hybrid manifests were generated using the script [here](./install/apigee-overrides)
+
+### Vault
+
+Hashicorp Vault was setup using instructions [here](https://github.com/srinandan/apigee-vault/tree/main/install-vault)
+
+### External Secrets
+
+This setup uses [ExternalSecrets](https://github.com/external-secrets/kubernetes-external-secrets), a Kubernetes controller which provisions Kubernetes secrets from external credential management systems like Vault. See [here](./install/external-secrets) for details about the setup.
+
+### cert-manager
+
+cert-manager was installed using the manifests [here](./install/cert-manager)
+
+## Management
+
 ### Ingress Certificate Management
 
-This setup uses [cert-manager](https://cert-manager.io/docs/) and [Let's Encrypt](https://letsencrypt.org/) to automatically obtain and renew certificates for the Ingress
+There are two ingresses in the setup:
+
+* An externally available (GCP External Load Balancer) hostname. This setup uses [cert-manager](https://cert-manager.io/docs/) and [Let's Encrypt](https://letsencrypt.org/) to automatically obtain and renew certificates for the ASM Ingress
+
+* An internally available (GCP Internal Load Balancer) hostname. This setup uses Vault's Credential Management and External Secrets to provision the key, cert and ca.
+
+### TLS Management/PKI
+
+This setup uses [cert-manager] to to dynamically request and provision certificates. cert-manager is [integrated]((https://cert-manager.io/docs/configuration/vault/)) with Vault. Vault acts as the PKI that signs the certificates requested by cert-manager. Vault's [PKI Engine](https://www.vaultproject.io/docs/secrets/pki) was used to create an self signed Issuer (self signed root) to sign the certificates.
+
+These certificates are used for TLS communication within Apigee hybrid (ex: Runtime to UDCA, Synchronizer to Runtime etc.). Details about the setup can be found [here](./install/vault)
 
 ### Credential Management
 
-This setup uses Hashicorp [Vault](http://projectvault.io/) to manage credentials to Apigee hybrid (ex: Encryption Keys, Passwords etc.). The secret hierarchy used is:
-
-* `secrets/srinandans-hybrid/datastore`: For cassandra secrets
-* `secrets/srinandans-hybrid/org`: For org level secrets
-* `secrets/srinandans-hybrid/ENV`: For environment level secrets
-
-### Secret Management
-
-This setup uses [ExternalSecrets](https://github.com/external-secrets/kubernetes-external-secrets), a Kubernetes controller which provisions Kubernetes secrets from external credential management systems like Vault
-
-## Generating Manifests
-
-### ASM Manifests
-
-Anthos Service Mesh manifests were generated using the command
-
-```bash
-istioctl manifest generate --set profile=asm-gcp -f asm/istio/istio-operator.yaml >> istio.yaml
-```
-
-### Apigee Manifests
-
-Apigee hybrid manifests were generated using the script [here](./install/apigee-overrides/generate-manifests.sh)
+Apigee hybrid allows customers to setup encryption keys for sensitive data like KVMs, Cache etc. This setup uses Vault's [KV 2 Secret Engine](https://www.vaultproject.io/docs/secrets/kv) to store such credentials. Details about the setup can be found [here](./install/vault)
 
 ## Versions
 
