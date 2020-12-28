@@ -13,7 +13,7 @@ Apigee hybrid manifests were generated using the script [here](./install/apigee-
 
 ### Vault
 
-Hashicorp Vault was setup using instructions [here](https://github.com/srinandan/apigee-vault/tree/main/install-vault)
+Hashicorp Vault was setup on a separate GKE cluster using instructions [here](https://github.com/srinandan/apigee-vault/tree/main/install-vault)
 
 ### External Secrets
 
@@ -43,6 +43,10 @@ These certificates are used for TLS communication within Apigee hybrid (ex: Runt
 
 Apigee hybrid allows customers to setup encryption keys for sensitive data like KVMs, Cache etc. This setup uses Vault's [KV 2 Secret Engine](https://www.vaultproject.io/docs/secrets/kv) to store such credentials. Details about the setup can be found [here](./install/vault)
 
+## Install Order
+
+The installation was executed in the order listed [here](./install)
+
 ## Versions
 
 * GKE 1.17
@@ -52,10 +56,6 @@ Apigee hybrid allows customers to setup encryption keys for sensitive data like 
 * cert-manager 1.0.4
 * Vault 1.6.1
 * External Secret 6.0.0
-
-## References
-
-* [https://github.com/srinandan/apigee-vault](https://github.com/srinandan/apigee-vault)
 
 ___
 
