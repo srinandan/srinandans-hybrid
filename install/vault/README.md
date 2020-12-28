@@ -2,7 +2,7 @@
 
 ## Install
 
-* See [here]((https://github.com/srinandan/apigee-vault)) for instructions to install
+* See [here]((https://github.com/srinandan/apigee-vault)) for instructions to install. Vault was install on a separate GKE cluster with an internal load balancer for access.
 
 ## Credential Setup
 
