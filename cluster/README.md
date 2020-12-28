@@ -26,3 +26,33 @@ This is likely due to non-pointer struct field generating an empty `status` obje
 ```
 
 There are 8 such occurrences.
+
+In the apigee-clusterroles manifest file, remove the following lines
+
+```yaml
+# This is the role that will be associated to the above service account.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: apigee-init
+rules:
+  - apiGroups: ["*"]
+    resources: ["secrets"]
+    verbs: ["get", "create", "watch"]
+---
+# Binding the role to the service account.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: apigee-init
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apigee-init
+subjects:
+  - kind: ServiceAccount
+    name: apigee-init
+    namespace: apigee
+```
+
+Refer [here](../namespace/apigee-system) for details

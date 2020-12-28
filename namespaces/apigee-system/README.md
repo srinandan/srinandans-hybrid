@@ -26,3 +26,14 @@ The following configuration was removed from `controller.yaml` since the data wa
       ca:
         secretName: apigee-ca
 ```
+
+Also removed from the controller was this service account, which is no longer necessary
+
+```yaml
+# This is the service account that will be used by Job for creating Apigee Root CA secret.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-init
+  namespace: apigee
+```

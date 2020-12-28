@@ -27,7 +27,7 @@ The manifests were executed in the following order:
   * apigee-system
     * namespace
     * apigee-gcr-secret [optional, only required if using a private repo]
-    * controller
+    * apigee-controller
   * apigee
     * The following is executed once per namespace
       * namespace
