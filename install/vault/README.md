@@ -1,5 +1,9 @@
 # vault
 
+## Install
+
+* See [here]((https://github.com/srinandan/apigee-vault)) for instructions to install
+
 ## Credential Setup
 
 The following hierarchy was used to create credentials for Apigee hybrid. The root element is `secret/srinandans-hybrid`
