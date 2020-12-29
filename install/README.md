@@ -32,6 +32,7 @@ The manifests were executed in the following order:
     * The following is executed once per namespace
       * namespace
       * apigee-peer-auth
+      * apigee-gcr-secret [optional, only required if using a private repo]
     * The following is executed for Cassandra
       * apigee-datastore-certs
       * apigee-datastore-secrets
@@ -49,4 +50,4 @@ The manifests were executed in the following order:
         * apigee-srinandans-hybrid-prod2-certs
         * apigee-srinandans-hybrid-prod2-secrets
         * apigee-srinandans-hybrid-prod2
-        * apigee-virtualhosts
+    * apigee-virtualhosts
