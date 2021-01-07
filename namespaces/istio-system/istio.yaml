@@ -711,7 +711,7 @@ data:
               "memory": "128Mi"
             }
           },
-          "statusPort": 15020,
+          "statusPort": 15021,
           "tracer": "stackdriver"
         },
         "proxy_init": {
@@ -1290,7 +1290,7 @@ spec:
         - name: istio-proxy
           image: "gcr.io/gke-release/asm/proxyv2:1.7.3-asm.6"
           ports:
-            - containerPort: 15020
+            - containerPort: 15021
             - containerPort: 80
             - containerPort: 443
             - containerPort: 15090
@@ -1622,7 +1622,7 @@ spec:
         image: gcr.io/gke-release/asm/proxyv2:1.7.3-asm.6
         name: istio-proxy
         ports:
-        - containerPort: 15020
+        - containerPort: 15021
         - containerPort: 80
         - containerPort: 443
         - containerPort: 15090
@@ -2073,7 +2073,7 @@ spec:
   loadBalancerIP: 10.138.0.2
   ports:
   - name: status-port
-    port: 15020
+    port: 15021
   - name: http2
     port: 80
   - name: https
@@ -2097,8 +2097,8 @@ spec:
   loadBalancerIP: 34.83.91.79
   ports:
   - name: status-port
-    port: 15020
-    targetPort: 15020
+    port: 15021
+    targetPort: 15021
   - name: http2
     port: 80
     targetPort: 80
