@@ -19,7 +19,10 @@ metadata:
   namespace: apigee
 spec:
   commonName: apigee-runtime-srinandans-hybr-prod2-8dd9313
+  #commonName: srinandans-hybrid
   dnsNames:
+  - apigee-runtime-srinandans-hybr-prod2-8dd9313
+  - apigee-runtime-srinandans-hybr-prod2-8dd9313.apigee
   - apigee-runtime-srinandans-hybr-prod2-8dd9313.apigee.svc.cluster.local
   issuerRef:
     kind: ClusterIssuer
@@ -38,7 +41,10 @@ metadata:
   namespace: apigee
 spec:
   commonName: apigee-synchronizer-srinandans-hybr-prod2-8dd9313
+  #commonName: srinandans-hybrid
   dnsNames:
+  - apigee-synchronizer-srinandans-hybr-prod2-8dd9313
+  - apigee-synchronizer-srinandans-hybr-prod2-8dd9313.apigee
   - apigee-synchronizer-srinandans-hybr-prod2-8dd9313.apigee.svc.cluster.local
   issuerRef:
     kind: ClusterIssuer
@@ -57,7 +63,10 @@ metadata:
   namespace: apigee
 spec:
   commonName: apigee-udca-srinandans-hybr-prod2-8dd9313
+  #commonName: srinandans-hybrid
   dnsNames:
+  - apigee-udca-srinandans-hybr-prod2-8dd9313
+  - apigee-udca-srinandans-hybr-prod2-8dd9313.apigee
   - apigee-udca-srinandans-hybr-prod2-8dd9313.apigee.svc.cluster.local
   issuerRef:
     kind: ClusterIssuer
