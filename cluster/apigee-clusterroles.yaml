@@ -507,3 +507,40 @@ subjects:
 - kind: ServiceAccount
   name: default
   namespace: apigee-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2020-12-27T06:01:56Z"
+  name: apigee-watcher-srinandans-hybr-cb84b88
+  resourceVersion: "33868453"
+  selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/apigee-watcher-srinandans-hybr-cb84b88
+  uid: c9e45b4b-5f6c-49df-bd19-fbea0a7afa85
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apigee-watcher-srinandans-hybr-cb84b88
+subjects:
+- kind: ServiceAccount
+  name: apigee-watcher-srinandans-hybr-cb84b88-sa
+  namespace: apigee
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: "2020-11-21T00:20:49Z"
+  name: apigee-metrics-apigee-telemetry
+  resourceVersion: "33830668"
+  selfLink: /apis/rbac.authorization.k8s.io/v1/clusterrolebindings/apigee-metrics-apigee-telemetry
+  uid: fc9b1fff-7009-479e-9327-cbe730a41c32
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: apigee-metrics-apigee-telemetry
+subjects:
+- kind: ServiceAccount
+  name: apigee-metrics-svc
+  namespace: apigee
+- kind: ServiceAccount
+  name: apigee-metrics-svc
+  namespace: apigee  
