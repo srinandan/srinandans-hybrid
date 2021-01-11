@@ -17,7 +17,7 @@ metadata:
   name: apigee-ca-issuer
 spec:
   vault:
-    server: $VAULT_ADDR
+    server: http://vault.srinandans.internal:8200
     path: pki/sign/apigeehybrid
     auth:
       kubernetes:
