@@ -28,6 +28,9 @@ kind: ServiceAccount
 metadata:
   name: istio-ingressgateway-service-account
   namespace: istio-system
+  #nandan fix
+  annotations:
+    iam.gke.io/gcp-service-account: istio-ingress@nandanks-151422.iam.gserviceaccount.com
   labels:
     app: istio-ingressgateway
     istio: ingressgateway
@@ -607,6 +610,7 @@ data:
         TRUST_DOMAIN: nandanks-151422.svc.id.goog
         USE_TOKEN_FOR_CSR: "true"
       tracing:
+        sampling: 100
         stackdriver:
           maxNumberOfAnnotations: 200
           maxNumberOfAttributes: 200
