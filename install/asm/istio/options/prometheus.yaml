@@ -12,23 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# The Istio DNS service is created as a GCP Internal Load Balancer to allow 
-# proxies that cannot interface with Kubernetes DNS to resolve Kubernetes DNS 
-# names.
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: istio-dns
-  namespace: kube-system
-  annotations:
-    cloud.google.com/load-balancer-type: "internal"
-  labels:
-    k8s-app: kube-dns
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
 spec:
-  type: LoadBalancer
-  ports:
-  - port: 53
-    protocol: UDP
-  selector:
-    k8s-app: kube-dns
+  values:
+    telemetry:
+      enabled: true
+      v2:
+        enabled: true
+        prometheus:
+          enabled: true
+        stackdriver:
+          enabled: false

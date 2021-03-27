@@ -11,20 +11,43 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+#
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 spec:
   profile: asm-gcp
   hub: gcr.io/gke-release/asm # {"$ref":"#/definitions/io.k8s.cli.setters.anthos.servicemesh.hub"}
-  tag: 1.7.3-asm.6 # {"$ref":"#/definitions/io.k8s.cli.setters.anthos.servicemesh.tag"}
+  tag: 1.8.3-asm.2 # {"$ref":"#/definitions/io.k8s.cli.setters.anthos.servicemesh.tag"}
+  meshConfig:
+    enableTracing: true
+    trustDomainAliases: # {"$ref":"#/definitions/io.k8s.cli.setters.anthos.servicemesh.trustDomainAliases"}
+    - "nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.trust-domain"}
+    trustDomain: "nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.trust-domain"}
+    defaultConfig:
+      tracing:
+        sampling: 100
+      proxyMetadata:
+        GKE_CLUSTER_URL: "https://container.googleapis.com/v1/projects/nandanks-151422/locations/us-west1-a/clusters/srinandans-hybrid" # {"$ref":"#/definitions/io.k8s.cli.substitutions.gke-cluster-url"}
+        GCP_METADATA: "nandanks-151422|102128743119|srinandans-hybrid|us-west1-a" # {"$ref":"#/definitions/io.k8s.cli.substitutions.gke-metadata"}
+        CA_PROVIDER: "GoogleCA"
+        PLUGINS: "GoogleTokenExchange"
+        USE_TOKEN_FOR_CSR: "true"
+        GCE_METADATA_HOST: "metadata.google.internal"
+    # Protocol detection timeout is not supported
+    protocolDetectionTimeout: 0s
+    # Locality load balancing is not supported
+    localityLbSetting:
+      enabled: false
   components:
+    base:
+      enabled: true
     egressGateways:
-      - name: istio-egressgateway
-        enabled: false
-        k8s:
-          hpaSpec:
-            maxReplicas: 2 
+    - enabled: false
+      name: istio-egressgateway
+      k8s:
+        hpaSpec:
+          maxReplicas: 5
+          minReplicas: 2
     ingressGateways:
     - name: internal-istio-ingressgateway
       enabled: true
@@ -36,12 +59,17 @@ spec:
           type: LoadBalancer
           loadBalancerIP: 10.138.0.2
           ports:
-            - name: status-port
-              port: 15020
-            - name: http2
-              port: 80
-            - name: https
-              port: 443    
+          - name: status-port
+            port: 15021
+            targetPort: 15021
+          - name: http2
+            port: 80
+            targetPort: 8080
+          - name: https
+            port: 443
+            targetPort: 8443
+        hpaSpec:
+          maxReplicas: 2
     - name: istio-ingressgateway
       enabled: true
       k8s:
@@ -50,46 +78,71 @@ spec:
           loadBalancerIP: 34.83.91.79
           ports:
           - name: status-port
-            port: 15020
-            targetPort: 15020
+            port: 15021
+            targetPort: 15021
           - name: http2
             port: 80
-            targetPort: 80
+            targetPort: 8080
           - name: https
             port: 443
+            targetPort: 8443
         hpaSpec:
-          maxReplicas: 2              
+          maxReplicas: 2
+    # The default profile is tuned to fit on smaller clusters.
+    # Increase cpu req to ensure we can handle larger scale clusters.
     pilot:
+      enabled: true
       k8s:
+        resources:
+          requests:
+            cpu: 500m
+        hpaSpec:
+          minReplicas: 2
+        replicaCount: 2
         env:
+        - name: GKE_CLUSTER_URL
+          value: "https://container.googleapis.com/v1/projects/nandanks-151422/locations/us-west1-a/clusters/srinandans-hybrid" # {"$ref":"#/definitions/io.k8s.cli.substitutions.gke-cluster-url"}
+        - name: GCP_METADATA
+          value: "nandanks-151422|102128743119|srinandans-hybrid|us-west1-a" # {"$ref":"#/definitions/io.k8s.cli.substitutions.gke-metadata"}
         - name: SPIFFE_BUNDLE_ENDPOINTS
           value: "nandanks-151422.svc.id.goog|https://storage.googleapis.com/mesh-ca-resources/spiffe_bundle.json" # {"$ref":"#/definitions/io.k8s.cli.substitutions.spiffe-bundle-endpoints"}
         - name: ENABLE_STACKDRIVER_MONITORING
           value: "true" # {"$ref":"#/definitions/io.k8s.cli.setters.anthos.servicemesh.controlplane.monitoring.enabled"}
-  meshConfig:
-    accessLogFile: "/dev/stdout"
-    accessLogEncoding: 1
-    # This is Apigee's custom access log format. Changes should not be made to this
-    # unless first working with the Data and AX teams as they parse these logs for
-    # SLOs.
-    accessLogFormat: '{"start_time":"%START_TIME%","remote_address":"%DOWNSTREAM_DIRECT_REMOTE_ADDRESS%","user_agent":"%REQ(USER-AGENT)%","host":"%REQ(:AUTHORITY)%","request":"%REQ(:METHOD)%
-      %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%","request_time":"%DURATION%","status":"%RESPONSE_CODE%","status_details":"%RESPONSE_CODE_DETAILS%","bytes_received":"%BYTES_RECEIVED%","bytes_sent":"%BYTES_SENT%","upstream_address":"%UPSTREAM_HOST%","upstream_response_flags":"%RESPONSE_FLAGS%","upstream_response_time":"%RESPONSE_DURATION%","upstream_service_time":"%RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%","upstream_cluster":"%UPSTREAM_CLUSTER%","x_forwarded_for":"%REQ(X-FORWARDED-FOR)%","request_method":"%REQ(:METHOD)%","request_path":"%REQ(X-ENVOY-ORIGINAL-PATH?:PATH)%","request_protocol":"%PROTOCOL%","tls_protocol":"%DOWNSTREAM_TLS_VERSION%","request_id":"%REQ(X-REQUEST-ID)%","sni_host":"%REQUESTED_SERVER_NAME%","apigee_dynamic_data":"%DYNAMIC_METADATA(envoy.lua)%"}'  
-    # enable stackdriver tracing
-    enableTracing: true
-    defaultConfig:
-      proxyMetadata:
-        GCE_METADATA_HOST: "metadata.google.internal"
-        TRUST_DOMAIN: "nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.trust-domain"}
+        - name: TOKEN_AUDIENCES
+          value: "istio-ca,nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.token-audiences"}
+        - name: PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION
+          value: "true"
   values:
+    # Protocol sniffing is not supported
+    pilot:
+      enableProtocolSniffingForOutbound: false
+      enableProtocolSniffingForInbound: false
+    # Enable telemetry v2 backend by Stackdriver.
+    # Prometheus is also supported with --set values.telemetry.v2.prometheus.enabled=true --set prometheus.enabled=true
+    telemetry:
+      enabled: true
+      v2:
+        enabled: true
+        stackdriver:
+          enabled: true # Enable metrics reporting
+          logging: true # Enable server access log reporting
+          monitoring: true
+          #outboundAccessLogging: "ERROS_ONLY" # Enable client access log reporting for error request
+          topology: true # Enable context graph edge reporting
+    sidecarInjectorWebhook:
+      rewriteAppHTTPProbe: true
     global:
-      trustDomain: "nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.trust-domain"}
-      # Enable SDS
+      proxy:
+        tracer: stackdriver
+      caAddress: "meshca.googleapis.com:443"
+      pilotCertProvider: kubernetes
+      sts:
+        servicePort: 15463
       sds:
         token:
           aud: "nandanks-151422.svc.id.goog" # {"$ref":"#/definitions/io.k8s.cli.substitutions.trust-domain"}
-      proxy:
-        tracer: stackdriver
-                  
-    gateways:
-      istio-ingressgateway:
-        runAsRoot: true
+      multiCluster:
+        # Provided to ensure a human readable name rather than a UUID.
+        clusterName: "cn-nandanks-151422-us-west1-a-srinandans-hybrid" # {"$ref":"#/definitions/io.k8s.cli.substitutions.cluster-name"}
+      meshID: "proj-102128743119" # {"$ref":"#/definitions/io.k8s.cli.substitutions.mesh-id"}
+      network: "NETWORK_ID" # {"$ref":"#/definitions/io.k8s.cli.substitutions.network"}
