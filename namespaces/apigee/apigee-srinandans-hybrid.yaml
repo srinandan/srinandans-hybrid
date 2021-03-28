@@ -67,8 +67,9 @@ spec:
     - name: gcrsecret
   name: "srinandans-hybrid"
   datastoreRef: "default"
-  datastoreCredentialRef: "srinandans-hybr-cb84b88-datastore-creds"
+  datastoreCredentialRef: "default-datastore-creds"
   dataEncryptionRef: "srinandans-hybr-cb84b88-data-encryption"
+  redisRef: "default"
   axHashingSaltRef: "srinandans-hybr-cb84b88-ax-salt"
   apigeeEndpoint: "https://apigee.googleapis.com"
   apigeeConnectEndpoint: "apigeeconnect.googleapis.com:443"
@@ -78,6 +79,11 @@ spec:
   gcpProjectID: "nandanks-151422"
   components:
     cassandraUserSetup:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
       podServiceAccountName: apigee-cassandra-user-setup-srinandans-hybr-cb84b88-sa
       nodeAffinityRequired: true
       nodeAffinity:
@@ -90,13 +96,18 @@ spec:
               - apigee-runtime
       initContainers:
       - name: "apigee-cassandra-readiness"
-        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.4.0/apigee-cassandra-client:20030_6ef0b85"
+        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.5.0/apigee-cassandra-client:20041_06c26d8"
         imagePullPolicy: IfNotPresent
       containers:
       - name: "apigee-cassandra-user-setup"
-        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.4.0/apigee-cassandra-client:20030_6ef0b85"
+        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.5.0/apigee-cassandra-client:20041_06c26d8"
         imagePullPolicy: IfNotPresent
     cassandraSchemaSetup:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
       podServiceAccountName: apigee-cassandra-schema-setup-srinandans-hybr-cb84b88-sa
       nodeAffinityRequired: true
       nodeAffinity:
@@ -108,12 +119,12 @@ spec:
               values:
               - apigee-runtime
       initContainers:
-      - name: "apigee-cassandra-readiness"
-        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.4.0/apigee-cassandra-client:20030_6ef0b85"
+      - name: "apigee-cassandra-user-readiness"
+        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.5.0/apigee-cassandra-client:20041_06c26d8"
         imagePullPolicy: IfNotPresent
       containers:
       - name: "apigee-cassandra-schema-setup"
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
         imagePullPolicy: IfNotPresent
     connectAgent:
       podServiceAccountName: apigee-connect-agent-srinandans-hybr-cb84b88-sa
@@ -126,9 +137,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
-      apigeeConnectEndpoint: "apigeeconnect.googleapis.com:443"
-      replicas: 1
+      version: "150rc1"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -139,9 +148,12 @@ spec:
             targetAverageUtilization: 75
       containers:
       - name: "apigee-connect-agent"
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-connect-agent/1.4.0:20356_d32e008"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-connect-agent/master:20518_946872d"
         imagePullPolicy: "IfNotPresent"
         resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi        
           requests:
             cpu: 200m
             memory: 128Mi
@@ -161,18 +173,24 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
+      version: "150rc1"
       #nandan fix
       #appServiceAccountSecretName: "apigee-watcher-srinandans-hybr-cb84b88-svc-account"
-      replicas: 1
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
       containers:
       - name: "apigee-watcher"
-        image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-watcher/1.4.0/watcher:20191_7c3f27f"
+        image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-watcher/master/watcher:20313_376b60f"
         imagePullPolicy: "IfNotPresent"
+      properties:
+        mintRecurringJobImage: ":"
     mart:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
       podServiceAccountName: apigee-mart-srinandans-hybr-cb84b88-sa
       nodeAffinityRequired: true
       nodeAffinity:
@@ -183,8 +201,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
-      replicas: 1
+      version: "150rc1"
       autoScaler:
         minReplicas: 1
         maxReplicas: 5
@@ -195,20 +212,18 @@ spec:
             targetAverageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: "apigee-authz"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 100
-          runAsGroup: 1000
-          privileged: false
-        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-authn-authz/master:20065_af30595"
         imagePullPolicy: "IfNotPresent"
         resources:
+          limits:
+            cpu: 25m
+            memory: 128Mi          
           requests:
-            cpu: 200m
+            cpu: 25m
             memory: 128Mi
         readinessProbe:
           httpGet:
@@ -229,7 +244,7 @@ spec:
           successThreshold: 1
           failureThreshold: 2
       - name: "apigee-mart"
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -252,6 +267,9 @@ spec:
           successThreshold: 1
           failureThreshold: 2
         resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi        
           requests:
             cpu: 500m
             memory: 512Mi
@@ -262,17 +280,13 @@ spec:
               name: "srinandans-hybr-cb84b88-encryption-keys"
               key: kmsEncryptionKey
       - name: "apigee-authz"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 100
-          runAsGroup: 1000
-          privileged: false
-        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-authn-authz/master:20065_af30595"
         imagePullPolicy: "IfNotPresent"
         resources:
+          limits:
+            cpu: 25m
+            memory: 128Mi                  
           requests:
-            cpu: 200m
+            cpu: 25m
             memory: 128Mi
 ---
-
-
