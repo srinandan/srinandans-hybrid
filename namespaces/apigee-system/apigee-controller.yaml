@@ -101,6 +101,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    apigee.cloud.google.com/platform: apigee
     control-plane: controller-manager
   name: apigee-controller-manager
   namespace: apigee-system
@@ -112,7 +113,10 @@ spec:
   template:
     metadata:
       labels:
+        apigee.cloud.google.com/platform: apigee
+        app: apigee-controller
         control-plane: controller-manager
+        revision: 150rc1
     spec:
       securityContext:
         runAsNonRoot: true
@@ -135,7 +139,7 @@ spec:
         - --upstream=http://127.0.0.1:8080/
         - --logtostderr=true
         - --v=10
-        image: google/apigee-kube-rbac-proxy:v0.4.1
+        image: gcr.io/apigee-release/hybrid/apigee-kube-rbac-proxy:v0.8.0
         imagePullPolicy: IfNotPresent
         name: kube-rbac-proxy
         ports:
@@ -150,7 +154,7 @@ spec:
         - --enable-controllers=true
         command:
         - /manager
-        image: us.gcr.io/google.com/edge-ci/integration/eda/apigee-operators/1.4.0/controllers:20350_a76683f
+        image: us.gcr.io/google.com/edge-ci/integration/eda/apigee-operators/master/controllers:20678_6a7a818
         imagePullPolicy: IfNotPresent
         name: manager
         ports:
@@ -294,14 +298,14 @@ spec:
                 - apigee-runtime
       containers:
         - name: apigee-ca
-          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/1.4.0/installer:20350_a76683f"
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20678_6a7a818"
           imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca.sh", "/tmp/apigee-config/apigee-ca.yaml" ]
           volumeMounts:
             - mountPath: "/tmp/apigee-config"
               name: tmp-apigee-configmap
         - name: apigee-ca-issuer
-          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/1.4.0/installer:20350_a76683f"
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20678_6a7a818"
           imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca-issuer.sh", "/tmp/apigee-config/apigee-ca-issuer.yaml" ]
           volumeMounts:
@@ -350,4 +354,3 @@ spec:
                     operator: In
                     values:
                       - s390x
----
