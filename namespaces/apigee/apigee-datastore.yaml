@@ -27,7 +27,7 @@ metadata:
   namespace: apigee
 spec:
   replicas: 1
-  credentialRef: default-datastore-creds
+  credentialRef: "default-datastore-creds"
   imagePullSecrets:
     - name: gcrsecret
   components:
@@ -43,9 +43,18 @@ spec:
               - apigee-runtime
       containers:
       - name: "apigee-cassandra-remove-dc"
-        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.4.0/apigee-cassandra-client:20030_6ef0b85"
+        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra-client/1.5.0/apigee-cassandra-client:20041_06c26d8"
         imagePullPolicy: "IfNotPresent"
     cassandra:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
+        capabilities:
+          add:
+          - IPC_LOCK
+          - SYS_RESOURCE
       podServiceAccountName: "default-sa"
       nodeAffinityRequired: true
       nodeAffinity:
@@ -59,7 +68,6 @@ spec:
       properties:
         clusterName: apigeecluster
         datacenter: dc-1
-        replicaCount: 1
         rack: ra-1
       storage:
         storageSize: 10Gi
@@ -76,7 +84,7 @@ spec:
           optional: true
       containers:
       - name: "apigee-cassandra"
-        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra/1.4.0:20054_5a3f5da"
+        image: "us.gcr.io/google.com/edge-ci/integration/data-services/apigee-hybrid-cassandra/1.5.0:20215_606dc59"
         imagePullPolicy: IfNotPresent
         readinessProbe:
           exec:
@@ -90,18 +98,12 @@ spec:
           successThreshold: 1
           failureThreshold: 2
         resources:
+          limits:
+            cpu: 2048m
+            memory: 2Gi
           requests:
             cpu: 500m
             memory: 1Gi
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 999
-          runAsGroup: 998
-          privileged: false
-          capabilities:
-            add:
-            - IPC_LOCK
-            - SYS_RESOURCE
         env:
         - name: MAX_HEAP_SIZE
           value: 512M
@@ -112,7 +114,5 @@ spec:
           mountPath: /var/secrets/google
         - name: apigee-cassandra-backup-key-file
           mountPath: /var/secrets/keys
----
-
 
 
