@@ -18,6 +18,7 @@ metadata:
   annotations:
     cert-manager.io/inject-ca-from: apigee-system/apigee-serving-cert
     certmanager.k8s.io/inject-ca-from: apigee-system/apigee-serving-cert
+  creationTimestamp: null
   name: apigee-validating-webhook-configuration
 webhooks:
 - clientConfig:
@@ -123,6 +124,24 @@ webhooks:
     - apigee.cloud.google.com
     apiVersions:
     - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - apigeedeployments
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: apigee-webhook-service
+      namespace: apigee-system
+      path: /validate-apigee-cloud-google-com-v1alpha3-apigeedeployment
+  failurePolicy: Fail
+  name: vapigeedeployment.apigee.cloud.google.com
+  rules:
+  - apiGroups:
+    - apigee.cloud.google.com
+    apiVersions:
+    - v1alpha3
     operations:
     - CREATE
     - UPDATE
@@ -241,6 +260,24 @@ webhooks:
     - apigee.cloud.google.com
     apiVersions:
     - v1alpha2
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - apigeedeployments
+- clientConfig:
+    caBundle: Cg==
+    service:
+      name: apigee-webhook-service
+      namespace: apigee-system
+      path: /mutate-apigee-cloud-google-com-v1alpha3-apigeedeployment
+  failurePolicy: Fail
+  name: mapigeedeployment.apigee.cloud.google.com
+  rules:
+  - apiGroups:
+    - apigee.cloud.google.com
+    apiVersions:
+    - v1alpha3
     operations:
     - CREATE
     - UPDATE
