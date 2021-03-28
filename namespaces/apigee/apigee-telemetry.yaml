@@ -47,7 +47,7 @@ spec:
     metrics:
       #nandan fix
       podServiceAccountName: "apigee-metrics-svc"
-      appServiceAccountSecretName: "apigee-metrics-svc"
+      #appServiceAccountSecretName: "apigee-metrics-svc"    
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
@@ -56,10 +56,10 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
+      version: "150rc1"
       containers:
       - name: "apigee-prometheus-app"
-        image: "google/apigee-prom-prometheus:v2.9.2"
+        image: "us.gcr.io/google.com/edge-ci/develop/thirdparty/apigee-prom-prometheus/master:20038_3710c92"
         imagePullPolicy: "IfNotPresent"
         resources:
           limits:
@@ -83,7 +83,7 @@ spec:
           timeoutSeconds: 3
           failureThreshold: 6
       - name: "apigee-stackdriver-exporter"
-        image: "google/apigee-stackdriver-prometheus-sidecar:0.7.5"
+        image: "gcr.io/apigee-release/hybrid/apigee-stackdriver-prometheus-sidecar:0.7.5"
         imagePullPolicy: "IfNotPresent"
         resources:
           limits:
@@ -93,7 +93,7 @@ spec:
             cpu: 128m
             memory: 512Mi
       - name: "apigee-prometheus-proxy"
-        image: "google/apigee-prom-prometheus:v2.9.2"
+        image: "us.gcr.io/google.com/edge-ci/develop/thirdparty/apigee-prom-prometheus/master:20038_3710c92"
         imagePullPolicy: "IfNotPresent"
         resources:
           limits:
@@ -103,7 +103,7 @@ spec:
             cpu: 500m
             memory: 512Mi
       - name: "apigee-prometheus-agg"
-        image: "google/apigee-prom-prometheus:v2.9.2"
+        image: "us.gcr.io/google.com/edge-ci/develop/thirdparty/apigee-prom-prometheus/master:20038_3710c92"
         imagePullPolicy: "IfNotPresent"
         resources:
           limits:
@@ -112,6 +112,3 @@ spec:
           requests:
             cpu: 500m
             memory: 512Mi
-
----
-
