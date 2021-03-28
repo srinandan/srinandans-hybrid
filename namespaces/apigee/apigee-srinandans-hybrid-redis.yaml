@@ -17,13 +17,13 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "default-redis-sa"
+  name: "apigee-default-redis-sa"
   namespace: apigee
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "default-redis-envoy-sa"
+  name: "apigee-default-redis-envoy-sa"
   namespace: apigee
 ---
 apiVersion: apigee.cloud.google.com/v1alpha1
@@ -45,7 +45,7 @@ spec:
         runAsUser: 999
         runAsGroup: 998
         privileged: false
-      podServiceAccountName: "default-redis-sa"
+      podServiceAccountName: "apigee-default-redis-sa"
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -96,7 +96,7 @@ spec:
         runAsUser: 999
         runAsGroup: 998
         privileged: false
-      podServiceAccountName: "default-redis-envoy-sa"
+      podServiceAccountName: "apigee-default-redis-envoy-sa"
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
