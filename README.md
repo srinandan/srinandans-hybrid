@@ -49,10 +49,10 @@ The installation was executed in the order listed [here](./install)
 
 ## Versions
 
-* GKE 1.17
-* Anthos Service Mesh 1.7.3
+* GKE 1.18.12
+* Anthos Service Mesh 1.8.3-2
 * Anthos Configuration Management
-* Apigee hybrid 1.4
+* Apigee hybrid 1.5-rc1
 * cert-manager 1.0.4
 * Vault 1.6.1
 * External Secret 6.0.0
