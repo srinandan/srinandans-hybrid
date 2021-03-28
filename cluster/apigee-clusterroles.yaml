@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,32 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This is the role that will be associated to the above service account.
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: apigee
-rules:
-  - apiGroups: ["*"]
-    resources: ["secrets"]
-    verbs: ["get", "create", "watch"]
-  - apiGroups: ["cert-manager.io"]
-    resources: ["issuers", "certificates", "clusterissuers"]
-    verbs: ["get", "create", "watch"]
----
-# Binding the role to the service account.
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: apigee
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: apigee
-subjects:
-  - kind: ServiceAccount
-    name: apigee
-    namespace: apigee-system
 ---
 # This is the role that will be associated to the above service account.
 apiVersion: rbac.authorization.k8s.io/v1
@@ -303,6 +277,26 @@ rules:
 - apiGroups:
   - apigee.cloud.google.com
   resources:
+  - apigeeredis
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apigee.cloud.google.com
+  resources:
+  - apigeeredis/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - apigee.cloud.google.com
+  resources:
   - apigeerouteconfigs
   verbs:
   - get
@@ -417,6 +411,18 @@ rules:
 - apiGroups:
   - batch
   resources:
+  - cronjobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
   - jobs
   verbs:
   - create
@@ -441,7 +447,32 @@ rules:
 - apiGroups:
   - cert-manager.io
   resources:
+  - certificates
+  - certificates/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - cert-manager.io
+  resources:
   - issuers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - policy
+  resources:
+  - poddisruptionbudgets
   verbs:
   - create
   - delete
@@ -467,6 +498,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    apigee.cloud.google.com/platform: apigee
   name: apigee-proxy-role
 rules:
 - apiGroups:
@@ -485,6 +518,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    apigee.cloud.google.com/platform: apigee
   name: apigee-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -498,6 +533,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    apigee.cloud.google.com/platform: apigee
   name: apigee-proxy-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -508,31 +545,29 @@ subjects:
   name: default
   namespace: apigee-system
 ---
+# This is the role that will be associated to the above service account.
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
+kind: ClusterRole
 metadata:
-  name: apigee-watcher-srinandans-hybr-cb84b88
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: apigee-watcher-srinandans-hybr-cb84b88
-subjects:
-- kind: ServiceAccount
-  name: apigee-watcher-srinandans-hybr-cb84b88-sa
-  namespace: apigee
+  name: apigee
+rules:
+  - apiGroups: ["*"]
+    resources: ["secrets"]
+    verbs: ["get", "create", "watch"]
+  - apiGroups: ["cert-manager.io"]
+    resources: ["issuers", "certificates", "clusterissuers"]
+    verbs: ["get", "create", "watch"]
 ---
+# Binding the role to the service account.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: apigee-metrics-apigee-telemetry
+  name: apigee
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: apigee-metrics-apigee-telemetry
+  name: apigee
 subjects:
-- kind: ServiceAccount
-  name: apigee-metrics-svc
-  namespace: apigee
-- kind: ServiceAccount
-  name: apigee-metrics-svc
-  namespace: apigee  
+  - kind: ServiceAccount
+    name: apigee
+    namespace: apigee-system
