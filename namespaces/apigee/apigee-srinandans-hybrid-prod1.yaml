@@ -47,7 +47,7 @@ metadata:
     env: prod1
     org: srinandans-hybrid  
 ---
-apiVersion: apigee.cloud.google.com/v1alpha1
+apiVersion: apigee.cloud.google.com/v1alpha2
 kind: ApigeeEnvironment
 metadata:
   name: srinandans-hybr-prod1-1d0dc5e
@@ -61,6 +61,11 @@ spec:
   organizationRef: srinandans-hybr-cb84b88
   components:
     synchronizer:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
       podServiceAccountName: apigee-synchronizer-srinandans-hybr-prod1-1d0dc5e-sa
       nodeAffinityRequired: true
       nodeAffinity:
@@ -71,7 +76,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
+      version: "150rc1"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -79,14 +84,16 @@ spec:
         - type: Resource
           resource:
             name: cpu
-            targetAverageUtilization: 75
+            target:
+              type: "Utilization"
+              averageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: apigee-synchronizer
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-synchronizer/1.4.0/apigee-synchronizer:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-synchronizer/1.5.0/apigee-synchronizer:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -109,40 +116,18 @@ spec:
           successThreshold: 1
           failureThreshold: 2
         resources:
+          limits:
+            cpu: 500m
+            memory: 768Mi
           requests:
             cpu: 100m
             memory: 256Mi
-      - name: "apigee-authz"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 100
-          runAsGroup: 1000
-          privileged: false
-        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
-        imagePullPolicy: "IfNotPresent"
-        resources:
-          requests:
-            cpu: 200m
-            memory: 128Mi
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 7091
-          initialDelaySeconds: 0
-          periodSeconds: 5
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 2
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 7091
-          initialDelaySeconds: 0
-          periodSeconds: 5
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 2
     udca:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false
       podServiceAccountName: apigee-udca-srinandans-hybr-prod1-1d0dc5e-sa
       nodeAffinityRequired: true
       nodeAffinity:
@@ -153,8 +138,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
-      replicas: 1
+      version: "150rc1"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -162,14 +146,16 @@ spec:
         - type: Resource
           resource:
             name: cpu
-            targetAverageUtilization: 75
+            target:
+              type: "Utilization"
+              averageUtilization: 75
       initContainers:
       - name: apigee-tls-readiness
-        image: "us.gcr.io/google.com/edge-ci/e2e/uap/apigee-udca/1.4.0:1.4.0-rc2"
+        image: "us.gcr.io/google.com/edge-ci/integration/uap/apigee-udca/1.5.0:20429_61dd3a2"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: apigee-udca
-        image: "us.gcr.io/google.com/edge-ci/e2e/uap/apigee-udca/1.4.0:1.4.0-rc2"
+        image: "us.gcr.io/google.com/edge-ci/integration/uap/apigee-udca/1.5.0:20429_61dd3a2"
         imagePullPolicy: "IfNotPresent"
         env:
         - name: "NOOP_MODE"
@@ -188,44 +174,15 @@ spec:
           requests:
             cpu: 100m
             memory: 256Mi
-      - name: "apigee-authz"
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 100
-          runAsGroup: 1000
-          privileged: false
-        image: "us.gcr.io/google.com/edge-ci/e2e/featureplatform/apigee-authn-authz/1.4.0:20061_04096f6"
-        imagePullPolicy: "IfNotPresent"
-        resources:
-          requests:
-            cpu: 200m
-            memory: 128Mi
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 7091
-          initialDelaySeconds: 0
-          periodSeconds: 5
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 2
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 7091
-          initialDelaySeconds: 0
-          periodSeconds: 5
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 2
       - name: "apigee-fluentd"
-        image: "us.gcr.io/google.com/edge-ci/develop/thirdparty/apigee-stackdriver-logging-agent/master:20029_883200d"
+        image: "gcr.io/apigee-release/hybrid/apigee-stackdriver-logging-agent:1.8.4"
         imagePullPolicy: IfNotPresent
         resources:
           requests:
             cpu: 100m
             memory: 128Mi
           limits:
+            cpu: 100m
             memory: 128Mi
     runtime:
       podServiceAccountName: apigee-runtime-srinandans-hybr-prod1-1d0dc5e-sa
@@ -238,8 +195,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "v140rc4"
-      replicas: 1
+      version: "150rc1"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -247,14 +203,19 @@ spec:
         - type: Resource
           resource:
             name: cpu
-            targetAverageUtilization: 75
+            target:
+              type: "Utilization"
+              averageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.4.0/apigee-mart-server:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        imagePullPolicy: "IfNotPresent"
+      - name: apigee-redis-envoy-readiness
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: apigee-runtime
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.4.0/apigee-runtime:21256_28e4824"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21314_5af2bb0"
         imagePullPolicy: "IfNotPresent"
         env:
         - name: "SRINANDANS_HYBRID_KMS_ENCRYPTION_KEY"
@@ -278,10 +239,11 @@ spec:
               name: "srinandans-hybr-prod1-1d0dc5e-encryption-keys"
               key: kvmEncryptionKey
         livenessProbe:
-          httpGet:
-            path: "/v1/probes/live"
-            scheme: HTTPS
-            port: 8843
+          exec:
+            command:
+            - java
+            - -jar
+            - /opt/apigee/apigee-runtime/lib/gateway/tools/runtime-liveness-probing-1.0.0.jar
           initialDelaySeconds: 15
           periodSeconds: 5
           timeoutSeconds: 5
@@ -298,6 +260,9 @@ spec:
           successThreshold: 1
           failureThreshold: 2
         resources:
+          limits:
+            cpu: 1000m
+            memory: 768Mi
           requests:
             cpu: 250m
             memory: 256Mi
