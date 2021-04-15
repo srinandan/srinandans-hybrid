@@ -76,7 +76,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -89,11 +89,11 @@ spec:
               averageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: apigee-synchronizer
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-synchronizer/1.5.0/apigee-synchronizer:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-synchronizer/1.5.0/apigee-synchronizer:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -138,7 +138,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -198,7 +198,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -211,14 +211,14 @@ spec:
               averageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
       - name: apigee-redis-envoy-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: apigee-runtime
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-runtime/1.5.0/apigee-runtime:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
         env:
         - name: "SRINANDANS_HYBRID_KMS_ENCRYPTION_KEY"
@@ -242,11 +242,10 @@ spec:
               name: "srinandans-hybr-prod2-8dd9313-encryption-keys"
               key: kvmEncryptionKey
         livenessProbe:
-          exec:
-            command:
-            - java
-            - -jar
-            - /opt/apigee/apigee-runtime/lib/gateway/tools/runtime-liveness-probing-1.0.0.jar
+          httpGet:
+            path: "/v1/probes/live"
+            scheme: HTTPS
+            port: 8843
           initialDelaySeconds: 15
           periodSeconds: 5
           timeoutSeconds: 5
@@ -265,7 +264,7 @@ spec:
         resources:
           limits:
             cpu: 1000m
-            memory: 768Mi    
+            memory: 2048Mi
           requests:
             cpu: 250m
             memory: 256Mi

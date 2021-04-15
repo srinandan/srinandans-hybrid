@@ -13,17 +13,16 @@
 # limitations under the License.
 
 
----
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "apigee-default-redis-sa"
+  name: "apigee-redis-default-sa"
   namespace: apigee
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: "apigee-default-redis-envoy-sa"
+  name: "apigee-redis-envoy-default-sa"
   namespace: apigee
 ---
 apiVersion: apigee.cloud.google.com/v1alpha1
@@ -35,7 +34,7 @@ release:
   forceUpdate: true
 spec:
   name: default
-  credentialRef: "default-redis-credentials"
+  credentialRef: "apigee-redis-default-creds"
   imagePullSecrets:
   - name: gcrsecret
   components:
@@ -45,7 +44,7 @@ spec:
         runAsUser: 999
         runAsGroup: 998
         privileged: false
-      podServiceAccountName: "apigee-default-redis-sa"
+      podServiceAccountName: "apigee-redis-default-sa"
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -56,7 +55,7 @@ spec:
               values:
               - apigee-runtime
       containers:
-      - name: redis
+      - name: apigee-redis
         image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-redis/master:20022_a461a78"
         imagePullPolicy: IfNotPresent
         livenessProbe:
@@ -96,7 +95,7 @@ spec:
         runAsUser: 999
         runAsGroup: 998
         privileged: false
-      podServiceAccountName: "apigee-default-redis-envoy-sa"
+      podServiceAccountName: "apigee-redis-envoy-default-sa"
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -106,6 +105,15 @@ spec:
               operator: In
               values:
               - apigee-runtime
+      version: "150rc2"
+      autoScaler:
+        minReplicas: 1
+        maxReplicas: 1
+        metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 75
       containers:
       - name: apigee-redis-envoy
         image: "us.gcr.io/google.com/edge-ci/integration/thirdparty/apigee-envoy/master:20005_681bc31"
@@ -125,4 +133,3 @@ spec:
         resources:
           requests:
             cpu: 500m
----

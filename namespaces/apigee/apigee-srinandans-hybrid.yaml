@@ -124,7 +124,7 @@ spec:
         imagePullPolicy: IfNotPresent
       containers:
       - name: "apigee-cassandra-schema-setup"
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21397_6a1bcd3"
         imagePullPolicy: IfNotPresent
     connectAgent:
       podServiceAccountName: apigee-connect-agent-srinandans-hybr-cb84b88-sa
@@ -137,7 +137,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1
@@ -173,7 +173,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       #nandan fix
       #appServiceAccountSecretName: "apigee-watcher-srinandans-hybr-cb84b88-svc-account"
       autoScaler:
@@ -191,7 +191,7 @@ spec:
         runAsUser: 999
         runAsGroup: 998
         privileged: false
-      podServiceAccountName: apigee-mart-srinandans-hybr-cb84b88-sa
+      podServiceAccountName: apigee-watcher-srinandans-hybr-cb84b88-sa
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -201,7 +201,7 @@ spec:
               operator: In
               values:
               - apigee-runtime
-      version: "150rc1"
+      version: "150rc3"
       autoScaler:
         minReplicas: 1
         maxReplicas: 5
@@ -212,7 +212,7 @@ spec:
             targetAverageUtilization: 75
       initContainers:
       - name: apigee-cassandra-schema-readiness
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
       containers:
       - name: "apigee-authz"
@@ -244,7 +244,7 @@ spec:
           successThreshold: 1
           failureThreshold: 2
       - name: "apigee-mart"
-        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21314_5af2bb0"
+        image: "us.gcr.io/google.com/edge-ci/integration/featureplatform/apigee-mart-server/1.5.0/apigee-mart-server:21397_6a1bcd3"
         imagePullPolicy: "IfNotPresent"
         livenessProbe:
           httpGet:
@@ -269,7 +269,7 @@ spec:
         resources:
           limits:
             cpu: 500m
-            memory: 512Mi        
+            memory: 1024Mi        
           requests:
             cpu: 500m
             memory: 512Mi

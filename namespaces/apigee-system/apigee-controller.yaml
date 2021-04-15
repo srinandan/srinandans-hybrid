@@ -139,7 +139,7 @@ spec:
         - --upstream=http://127.0.0.1:8080/
         - --logtostderr=true
         - --v=10
-        image: gcr.io/apigee-release/hybrid/apigee-kube-rbac-proxy:v0.8.0
+        image: us.gcr.io/google.com/edge-ci/integration/thirdparty/apigee-kube-rbac-proxy/master:20002_23ce2ce
         imagePullPolicy: IfNotPresent
         name: kube-rbac-proxy
         ports:
@@ -154,7 +154,7 @@ spec:
         - --enable-controllers=true
         command:
         - /manager
-        image: us.gcr.io/google.com/edge-ci/integration/eda/apigee-operators/master/controllers:20678_6a7a818
+        image: us.gcr.io/google.com/edge-ci/integration/eda/apigee-operators/master/controllers:20800_fc60cff
         imagePullPolicy: IfNotPresent
         name: manager
         ports:
@@ -298,14 +298,14 @@ spec:
                 - apigee-runtime
       containers:
         - name: apigee-ca
-          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20678_6a7a818"
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20800_fc60cff"
           imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca.sh", "/tmp/apigee-config/apigee-ca.yaml" ]
           volumeMounts:
             - mountPath: "/tmp/apigee-config"
               name: tmp-apigee-configmap
         - name: apigee-ca-issuer
-          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20678_6a7a818"
+          image: "us.gcr.io/google.com/edge-ci/integration/eda/apigee-installer/master/installer:20800_fc60cff"
           imagePullPolicy: IfNotPresent
           command: [ "/bin/bash", "/tmp/apigee-config/install-apigee-ca-issuer.sh", "/tmp/apigee-config/apigee-ca-issuer.yaml" ]
           volumeMounts:
