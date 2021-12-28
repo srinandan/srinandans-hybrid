@@ -12,16 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: apigee-serving-cert
-  namespace: apigee-system
-spec:
-  dnsNames:
-  - apigee-webhook-service.apigee-system.svc
-  - apigee-webhook-service.apigee-system.svc.cluster.local
-  issuerRef:
-    kind: Issuer
-    name: apigee-selfsigned-issuer
-  secretName: webhook-server-cert
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+# Enable this patch to add pull secret to the apigee controller
+- path: ctrl-pullsecret.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: apigee-controller-manager
+    version: v1

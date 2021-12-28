@@ -14,7 +14,7 @@ This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](htt
 
 Creating an appropriate folder structure is key to using kustomize. The folder structure below isn't the only approach. Here is a brief explanation of the folders:
 
-* `base`: This folder contains the Kubernetes manifests of ApigeeOrganization, ApigeeEnvironment, ApigeeDatastore and other components of the runtime. Within the folder, there are sub folders per namespace - `apigee`, `apigee-system` and `istio-system`
+* `base`: This folder contains the Kubernetes manifests of ApigeeOrganization, ApigeeEnvironment, ApigeeDatastore and other components of the runtime. Within the folder, there are sub folders per component - `controller`, `organization`, `environment` and `envoyfilters`
 * `cluster`: This folder contains cluster level resources like `ClusterRoleBinding`, `CustomResourceDefinitions` etc
 * `primary`: This folder contains a CA cert file which must only be executed in the primary cluster. If you have more than one region for the Apigee hybrid deployment, select one of the regions  as the primary.
 * `overlays/templates`: This folder contains templates that are used to generate Kubernetes manifests
@@ -129,6 +129,7 @@ Open the [vars.sh](./vars.sh) and [env-vars.sh](./env-vars.sh) to ensure the fol
 * `PROJECT_ID`: GCP Project Id
 * `TAG`: Apigee hybrid version
 * `INSTANCE_ID`: Apigee Instance name
+* `ASM_MINOR_VERSION`: Anthos Service Mesh minor Version. For example, if installing ASM 1.12, set this to 12
 
 ## Install Order
 
@@ -136,7 +137,7 @@ Follow the instructions in [install.sh](./install.sh). If not using workload ide
 
 ## Kustomize
 
-Features and/properties of the installation can be modified by commenting or uncommenting the [kustomization.tmpl](./overlays/instance1/kustomization.tmpl) file. The following are enabled by default
+Features and/properties of the installation can be modified by commenting or uncommenting the [kustomization.tmpl](./overlays/instance1/kustomization.tmpl) file. The kustomize template for the controller is [here](./overlays/controller/kustomization.tmpl). The following feature for the org are enabled by default
 
 ```yaml
 components:
@@ -151,20 +152,21 @@ components:
 # Enable Apigee metrics
 - metrics
 
-# Use Google Service accounts instead of workload identity
+# Use Google service accounts instead of workload identity
 #- google-service-accounts
 
 # Setup Apigee for multi-cluster deployments
 #- multi-region
 
-# Enable hostNetwork for Cassandra multi-region communication
+# Enable host Network for Cassandra multi-region communication
 #- enable-host-network
 
-# ChangeCassandra replicas
+# Change Cassandra replicas
 #- cass-replicas
 
 # Enable Cassandra backup
 #- cass-backup
+
 # Enable Apigee logger to send container logs to Cloud logging
 #- logger
 
@@ -216,9 +218,18 @@ cp -r ./overlays/instances1/environments/<OLD-ENV-NAME> ./overlays/instances1/en
 
 5. Apply the Kubernetes manifests
 
+To apply a single environment,
+
 ```sh
-kubectl apply -k ./overlay/instance1/environments/${ENV_NAME}
+kubectl apply -k ./overlays/instance1/environments/${ENV_NAME}
 ```
+
+To apply all environments,
+
+```sh
+kubectl apply -k ./overlays/instance1/environments
+```
+
 
 ### Adding a second region
 
@@ -256,8 +267,15 @@ components:
 
 This will generate `tls.key` and `tls.cert`. Change the kubeconfig to the new cluster.
 
-4. Follow the instructions in [install.sh](./install)
+4. Change the `INSTANCE_ID` variable in [vars.sh](./vars.sh). Add variables for `SEED_HOST` and `DATA_CENTER`
 
+5. Follow the instructions in [install.sh](./install). **Do not** execute step 5 on second (and other) regions
+
+### Other considertions
+
+* One could manage envgroups separately from the org. This is useful when there are many envgroups and need to be managed independent of other org changes.
+* Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
+* Integrate with ArgoCD, Flux or Anthos Config Management for GitOps.
 
 ## Versions
 

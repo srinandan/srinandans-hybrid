@@ -15,7 +15,7 @@
 
 #source vars.sh
 
-envsubst < ./overlays/controller/kustomization.tmpl > ./overlays/controller/kustomization.yaml
+envsubst < ./overlays/templates/controller-kustomization.tmpl > ./overlays/controller/kustomization.yaml
 
 #kustomize build overlays/controller -o controller.yaml
 

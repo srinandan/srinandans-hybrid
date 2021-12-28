@@ -14,9 +14,7 @@
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: apigee-system
 resources:
-  - namespace.yaml
   - apigee-sa.yaml
   - apigee-controller-manager-metrics-service-svc.yaml
   - apigee-leader-election-rolebinding-rb.yaml

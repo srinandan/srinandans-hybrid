@@ -99,11 +99,38 @@ patches:
     kind: ServiceAccount
     name: apigee-cassandra-schema-setup-org-sa
     version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-envoyfilter-1-${ASM_MINOR_VERSION}
+  target:
+    kind: EnvoyFilter
+    name: apigee-envoyfilter
+    version: v1alpha3
+- patch: |-
+    - op: replace
+      path: /spec/configPatches/0/match/proxy/proxyVersion
+      value: ^1\.${ASM_MINOR_VERSION}.*
+  target:
+    kind: EnvoyFilter
+    name: .*
+    group: networking.istio.io
+    version: v1alpha3
+- patch: |-
+    - op: replace
+      path: /spec/configPatches/2/match/proxy/proxyVersion
+      value: ^1\.${ASM_MINOR_VERSION}.*
+  target:
+    kind: EnvoyFilter
+    name: .*
+    group: networking.istio.io
+    version: v1alpha3
 
 resources:
 - namespace.yaml
 - ../../base/datastore
 - ../../base/organization
+- ../../base/envoyfilters
 
 components:
 - node-selector

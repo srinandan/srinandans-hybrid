@@ -31,7 +31,7 @@ spec:
         apigee.cloud.google.com/platform: apigee
         app: apigee-controller
         control-plane: controller-manager
-        revision: "163"
+        revision: "000"
     spec:
       securityContext:
         runAsNonRoot: true

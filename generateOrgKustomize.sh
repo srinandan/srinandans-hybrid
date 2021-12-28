@@ -27,6 +27,6 @@ envsubst < ./overlays/templates/annotate.tmpl > ./overlays/instance1/workload-id
 envsubst < ./overlays/templates/certificate.tmpl > ./overlays/instance1/envgroup/certificate.yaml
 envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/instance1/envgroup/apigeerouteconfig.yaml
 
-envsubst < ./overlays/instance1/kustomization.tmpl > ./overlays/instance1/kustomization.yaml
+envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/instance1/kustomization.yaml
 
 #kustomize build overlays/instance1 -o instance1.yaml
