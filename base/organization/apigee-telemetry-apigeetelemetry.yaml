@@ -1,0 +1,99 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+kind: ApigeeTelemetry
+apiVersion: apigee.cloud.google.com/v1alpha1
+metadata:
+  name: apigee-telemetry
+  labels:
+    apigee.cloud.google.com/platform: apigee
+release:
+  forceUpdate: true
+spec:
+  clusterName: cluster
+  clusterRegion: cluster-region
+  gcpProjectID: project-id
+  metricsExport:
+    enabled: true
+    defaultMetricsProjectID: project-id
+    appMetricsProjectID: project-id
+    proxyMetricsProjectID: project-id
+    stackdriverAPIEndpoint: https://monitoring.googleapis.com:443/
+  containerLogsExport:
+    enabled: false
+    projectID: project-id
+  accessLogsExport:
+    enabled: false
+  components:
+    metrics:
+      containers:
+      - name: apigee-prometheus-app
+        image: gcr.io/apigee-release/hybrid/apigee-prom-prometheus:v2.25.0
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: 9090
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 120
+        livenessProbe:
+          httpGet:
+            path: /-/healthy
+            port: 9090
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 6
+      - name: apigee-stackdriver-exporter
+        image: gcr.io/apigee-release/hybrid/apigee-stackdriver-prometheus-sidecar:0.7.5
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1Gi
+          requests:
+            cpu: 128m
+            memory: 512Mi
+      - name: apigee-prometheus-proxy
+        image: gcr.io/apigee-release/hybrid/apigee-prom-prometheus:v2.25.0
+        imagePullPolicy: IfNotPresent
+      - name: apigee-prometheus-agg
+        image: gcr.io/apigee-release/hybrid/apigee-prom-prometheus:v2.25.0
+        imagePullPolicy: IfNotPresent
+    containerLogs:
+      podServiceAccountName: apigee-telemetry-containerlogs-sa
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: cloud.google.com/gke-nodepool
+              operator: In
+              values:
+              - apigee-runtime
+          - matchExpressions:
+            - key: cloud.google.com/gke-nodepool
+              operator: In
+              values:
+              - apigee-data
+      containers:
+      - name: "apigee-logger"
+        image: "gcr.io/apigee-release/hybrid/apigee-stackdriver-logging-agent:1.8.9"
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 250Mi

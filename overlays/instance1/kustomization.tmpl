@@ -1,0 +1,120 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# default namespace for apigee runtime
+namespace: apigee
+
+# override the hub and tag for various hybrid versions
+images:
+- name: ${HUB}/apigee-authn-authz
+  newTag: ${TAG}
+- name: ${HUB}/apigee-cassandra-backup-utility
+  newTag: ${TAG}
+- name: ${HUB}/apigee-connect-agent
+  newTag: ${TAG}
+- name: ${HUB}/apigee-envoy
+  newTag: v1.19.1
+- name: ${HUB}/apigee-hybrid-cassandra
+  newTag: ${TAG}
+- name: ${HUB}/apigee-hybrid-cassandra-client
+  newTag: ${TAG}
+- name: ${HUB}/apigee-mart-server
+  newTag: ${TAG}
+- name: ${HUB}/apigee-prom-prometheus
+  newTag: v2.25.0
+- name: ${HUB}/apigee-redis
+  newTag: ${TAG}
+- name: ${HUB}/apigee-stackdriver-logging-agent
+  newTag: 1.8.9
+- name: ${HUB}/apigee-stackdriver-prometheus-sidecar
+  newTag: 0.7.5
+
+patches:
+- path: org.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeOrganization
+    name: .*
+    version: v1alpha2
+- path: org-sa.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeOrganization
+    name: .*
+    version: v1alpha2
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: ${ORG}
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeOrganization
+    name: .*
+    version: v1alpha2
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-mart-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-mart-org-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-watcher-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-watcher-org-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-udca-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-udca-org-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-connect-agent-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-connect-agent-org-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-cassandra-user-setup-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-cassandra-user-setup-org-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-cassandra-schema-setup-${ORG}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-cassandra-schema-setup-org-sa
+    version: v1
+
+resources:
+- namespace.yaml
+- ../../base/datastore
+- ../../base/organization
+
+components:
+- node-selector
+- workload-identity
+- secrets
+- envgroup
+- metrics
+#- google-service-accounts
+#- multi-region
+#- enable-host-network
+#- cass-replicas
+#- cass-backup
+#- logger
+#- pullsecret

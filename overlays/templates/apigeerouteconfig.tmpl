@@ -1,0 +1,12 @@
+apiVersion: apigee.cloud.google.com/v1alpha1
+kind: ApigeeRouteConfig
+metadata:
+  name: ${ORG_NAME}-${ENV_GROUP}
+spec:
+  selector:
+    app: istio-ingressgateway
+  connectTimeout:
+    300
+  tls:
+    mode: SIMPLE
+    secretNameRef: "istio-system/${ORG_NAME}-${ENV_GROUP}"

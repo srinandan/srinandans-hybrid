@@ -1,0 +1,37 @@
+apiVersion: apigee.cloud.google.com/v1alpha2
+kind: ApigeeOrganization
+metadata:
+  name: org
+spec:
+  components:
+    cassandraUserSetup:
+      podServiceAccountName: apigee-cassandra-user-setup-${ORG}-sa
+      version: "${VERSION}"
+    cassandraSchemaSetup:
+      podServiceAccountName: apigee-cassandra-schema-setup-${ORG}-sa
+      version: "${VERSION}"
+    connectAgent:
+      version: "${VERSION}"
+      podServiceAccountName: apigee-connect-agent-${ORG}-sa
+      #appServiceAccountSecretName: apigee-connect-agent-${ORG}-sa
+    watcher:
+      version: "${VERSION}"
+      podServiceAccountName: apigee-watcher-${ORG}-sa
+      #appServiceAccountSecretName: apigee-watcher-${ORG}-sa
+    mart:
+      version: "${VERSION}"
+      podServiceAccountName: apigee-mart-${ORG}-sa
+      #appServiceAccountSecretName: apigee--mart-${ORG}-sa
+      containers:
+      - name: apigee-mart
+        image: ${HUB}/apigee-mart-server:${TAG}
+        env:
+        - name: ${UC_ORG_NAME}_KMS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ${ORG}-encryption-keys
+              key: kmsEncryptionKey
+    udca:
+      version: "${VERSION}"
+      podServiceAccountName: apigee-udca-${ORG}-sa
+      #appServiceAccountSecretName: apigee-udca-${ORG}-sa

@@ -1,0 +1,15 @@
+apiVersion: apigee.cloud.google.com/v1alpha2
+kind: ApigeeOrganization
+metadata:
+  name: ${ORG}
+spec:
+  name: ${ORG_NAME}
+  datastoreRef: default
+  datastoreCredentialRef: apigee-datastore-default-creds
+  dataEncryptionRef: ${ORG}-data-encryption
+  redisRef: default
+  axHashingSaltRef: ${ORG}-ax-salt
+  instanceID: ${INSTANCE_ID}
+  clusterName: ${CLUSTER_NAME}
+  clusterRegion: ${CLUSTER_REGION}
+  gcpProjectID: ${PROJECT_ID}

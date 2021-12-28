@@ -1,0 +1,27 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ${ORG_NAME}-${ENV_GROUP}
+  namespace: istio-system
+spec:
+  secretName: ${ORG_NAME}-${ENV_GROUP}
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  subject:
+    organizations:
+      - ${ORG_NAME}
+  commonName: api.${ORG_NAME}.example
+  isCA: false
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 2048
+  usages:
+    - server auth
+  dnsNames:
+    - api.${ORG_NAME}.example
+  issuerRef:
+    name: apigee-ca-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+

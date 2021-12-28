@@ -1,0 +1,88 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# default namespace for apigee runtime
+namespace: apigee
+
+# override the hub and tag for various hybrid versions
+images:
+- name: ${HUB}/apigee-authn-authz
+  newTag: ${TAG}
+- name: ${HUB}/apigee-hybrid-cassandra-client
+  newTag: ${TAG}
+- name: ${HUB}/apigee-runtime
+  newTag: ${TAG}
+- name: ${HUB}/apigee-synchronizer
+  newTag: ${TAG}
+- name: ${HUB}/apigee-udca
+  newTag: ${TAG}
+
+resources:
+- ../../../../base/environment
+
+components:
+- node-selector
+- secrets
+#- runtime-replicas
+
+patches:
+- path: env.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeEnvironment
+    name: .*
+    version: v1alpha2
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: ${ENV}
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeEnvironment
+    name: .*
+    version: v1alpha2
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-synchronizer-${ENV}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-synchronizer-env-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-runtime-${ENV}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-runtime-env-sa
+    version: v1
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-udca-${ENV}-sa
+  target:
+    kind: ServiceAccount
+    name: apigee-udca-env-sa
+    version: v1
+
+# enable the following if not using workload identity
+#secretGenerator:
+#- name: apigee-udca-${ORG}-${ENV}-svc-account
+#  namespace: apigee
+#  options:
+#    disableNameSuffixHash: true
+#  files:
+#  - client_secret.json
+#- name: apigee-synchronizer-${ENV}-svc-account
+#  namespace: apigee
+#  options:
+#    disableNameSuffixHash: true
+#  files:
+#  - client_secret.json
+#- name: apigee-rutime-${ENV}-svc-account
+#  namespace: apigee
+#  options:
+#    disableNameSuffixHash: true
+#  files:
+#  - client_secret.json

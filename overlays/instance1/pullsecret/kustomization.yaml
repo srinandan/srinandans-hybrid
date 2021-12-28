@@ -1,0 +1,53 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+# Enable this patch to add pull secret to redis
+- path: redis-pullsecret.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeRedis
+    name: .*
+    version: v1alpha1
+# Enable this patch to add pull secret to cassandra
+- path: cass-pullsecret.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeDatastore
+    name: .*
+    version: v1alpha1
+# Enable this patch to add node-selectors to an org
+- path: org-pullsecret.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeOrganization
+    name: .*
+    version: v1alpha2
+# Enable this patch to add pull secret to an environment
+- path: env-pullsecret.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeEnvironment
+    name: .*
+    version: v1alpha2
+# Enable this patch to add pull secret to telemetry
+- path: tele-pullsecret.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeTelemetry
+    name: .*
+    version: v1alpha1
