@@ -20,6 +20,7 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 * `overlays/templates`: This folder contains templates that are used to generate Kubernetes manifests
 * `overlays/instance1`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
 * `overlays/instance1/<sub folders>`: Each sub folder inside the `instance1` folder is a feature or property. They're enabled/disabled as necessary in an instance
+* `overlays/instance1/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
 
 ```sh
 .
@@ -218,6 +219,45 @@ cp -r ./overlays/instances1/environments/<OLD-ENV-NAME> ./overlays/instances1/en
 ```sh
 kubectl apply -k ./overlay/instance1/environments/${ENV_NAME}
 ```
+
+### Adding a second region
+
+In most cases, an Apigee Organization is identical across data centers or regions. In Apigee terms, an Apigee runtime deployment of an org is called an Apigee instance. Instances of an Org are typically identical.
+
+1. Make a copy of all the files in the first instance to the new instance.
+
+```sh
+mkdir ./overlays/instance2
+
+cp -r ./overlays/instance1/* ./overlays/instance2/
+```
+
+2. Modify the kustomization.yaml in new instance. Enable the multi-region feature.
+
+```yaml
+components:
+- node-selector
+- workload-identity
+- secrets
+- envgroup
+- metrics
+# Enable the following feature in the second and subsequent regions
+- multi-region
+# On platforms like GKE on-prem, also enable hostNetwork
+- enable-host-network
+```
+
+3. Download the tls keys and certs from the first cluster.
+
+```sh
+# ensure kubeconfing points to the first cluster
+. ./overlay/instance1/multi-region/get-tls-keys.sh
+```
+
+This will generate `tls.key` and `tls.cert`. Change the kubeconfig to the new cluster.
+
+4. Follow the instructions in [install.sh](./install)
+
 
 ## Versions
 
