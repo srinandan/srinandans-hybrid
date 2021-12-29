@@ -4,5 +4,5 @@ metadata:
   name: apigee-telemetry
 spec:
   components:
-    metricsApp:
+    metrics:
       appServiceAccountSecretName: apigee-metrics-svc-account
