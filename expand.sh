@@ -53,5 +53,8 @@ kubectl apply -k overlays/controller
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
 kubectl apply -k overlays/${INSTANCE_ID}
 
-# step 9: install the apigee environment
+# step 9: Apply the certificate
+kubectl apply -f overlays/certificates/certificate-${ENV_GROUP}.yaml
+
+# step 10:: install the apigee environment
 kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME}
