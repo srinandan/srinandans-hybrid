@@ -20,7 +20,8 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 * `overlays/templates/org-components`: Kustomize has a concept of [components](https://kubectl.docs.kubernetes.io/guides/config_management/components/). This folder contains a set of commonly used features or properties that can be enabled at the org level.
 * `overlays/templates/env-components`: This folder contains a set of Kustomize components for  commonly used features or properties that can be enabled at the env level
 * `overlays/<instance-id>`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
-* `overlays/instance1/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
+* `overlays/<instance-id>/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
+* `overlays/certificates`: This folder contains the certificates for northbound TLS
 
 ```sh
 .
@@ -57,6 +58,8 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 │   │   │       ├── client_secret.json
 │   │   │       ├── kustomization.yaml
 │   │   │       └── <ENV COMPONENTS>
+│   ├── certificates
+│   │   └── TLS CERTS
 │   └── templates
 │       └── KUBERNETES MANIFEST TEMPLATES
 │   ├── env-components
@@ -133,7 +136,7 @@ The org kustomization file is generated via the script `generateOrgKustomize.sh`
 
 ### Default Ingress Configuration
 
-This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl)
+This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl). The generated certificate is stored in `./overlays/certificates`
 
 ### Add a new environment
 
