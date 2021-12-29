@@ -1,4 +1,4 @@
-# srinandans-hybrid
+# Use Kustomize with Apigee hybrid
 
 This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](https://cloud.google.com/apigee/docs/hybrid/v1.6/what-is-hybrid) runtime and explores the use of [Kustomize](https://kustomize.io/) for configuration management.
 
@@ -18,7 +18,7 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 * `primary`: This folder contains a CA cert file which must only be executed in the primary cluster. Technically speaking, Apigee hybrid has not concept of primary vs. secondary regions. If you have more than one region for the Apigee hybrid deployment, select the first region  as the primary.
 * `overlays/templates`: This folder contains templates that are used to generate Kubernetes manifests
 * `overlays/templates/org-components`: Kustomize has a concept of [components](https://kubectl.docs.kubernetes.io/guides/config_management/components/). This folder contains a set of commonly used features or properties that can be enabled at the org level.
-* `overlays/templates/env-components`: This folder contains a set of Kustomize components for  commonly used features or properties that can be enabled at the env level. 
+* `overlays/templates/env-components`: This folder contains a set of Kustomize components for  commonly used features or properties that can be enabled at the env level
 * `overlays/<instance-id>`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
 * `overlays/instance1/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
 
@@ -71,6 +71,8 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV>` are generated based on environment variables. The `generateOrgKustomize.sh` and `generateEnvKustomize.sh` scripts generate Kustomize from templates (in `./overlays/templates`).
 
 ## Setup Variables
+
+**NOTE:** The setup scripts require access to tools on specific versions. Please consult [here](#tools) before proceeding.
 
 Open the [vars.sh](./vars.sh) and [env-vars.sh](./env-vars.sh) to ensure the following variables are appropriately set:
 
@@ -169,7 +171,7 @@ kubectl apply -k ./overlays/instance1/environments
 
 In most cases, an Apigee Organization is identical across data centers or regions. In Apigee terms, an Apigee runtime deployment of an org is called an Apigee instance. Instances of an Org are typically identical.
 
-1. Change/set the environment variable `INSTANCE_ID`. Add env variables for `SEED_HOST` and `DATA_CENTER` in [vars.sh](./vars.sh)
+1. Change/set the environment variables `INSTANCE_ID`, `CLUSTER_NAME` and `CLUSTER_REGION`. Add env variables for `SEED_HOST` and `DATA_CENTER`. Make these changes in [vars.sh](./vars.sh)
 
 Make a copy of all the files in the first instance to the new instance.
 
@@ -229,6 +231,9 @@ This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new clu
 * envsubst 0.21
 * helm v3.7.2
 
+## History
+
+A previous version of this repo contained integration with Anthos Configuration Management and Vault. The contents are found in the `legacy` branch.
 ___
 
 ## Support
