@@ -4,11 +4,10 @@ This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](htt
 
 ## Prerequisites
 
-* A supported version of kubernetes cluster
-* Apigee control plane entities like Organization, Environment & Environment Group exists
-* A Google Service Account is created with appropriate roles/permissions. This
-  repo assumes a single GSA for all components (udca, sync etc.)
-* If not using workload identity, download the private key.
+* A kubernetes cluster of supported version
+* Apigee control plane entities like Organization, Environment & Environment Group have been created
+* A Google Service Account is created with appropriate roles/permissions. This repo assumes a single GSA for all components (udca, sync etc.)
+* If not using workload identity, download the private key. Name the file `client_secret.json` and place the file in `./overlays/org-components/google-service-accounts/` and `./overlays/env-components/google-service-accounts/`
 
 ## Folder Structure
 
@@ -16,106 +15,60 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 
 * `base`: This folder contains the Kubernetes manifests of ApigeeOrganization, ApigeeEnvironment, ApigeeDatastore and other components of the runtime. Within the folder, there are sub folders per component - `controller`, `organization`, `environment` and `envoyfilters`
 * `cluster`: This folder contains cluster level resources like `ClusterRoleBinding`, `CustomResourceDefinitions` etc
-* `primary`: This folder contains a CA cert file which must only be executed in the primary cluster. If you have more than one region for the Apigee hybrid deployment, select one of the regions  as the primary.
+* `primary`: This folder contains a CA cert file which must only be executed in the primary cluster. Technically speaking, Apigee hybrid has not concept of primary vs. secondary regions. If you have more than one region for the Apigee hybrid deployment, select the first region  as the primary.
 * `overlays/templates`: This folder contains templates that are used to generate Kubernetes manifests
-* `overlays/instance1`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
-* `overlays/instance1/<sub folders>`: Each sub folder inside the `instance1` folder is a feature or property. They're enabled/disabled as necessary in an instance
+* `overlays/templates/org-components`: Kustomize has a concept of [components](https://kubectl.docs.kubernetes.io/guides/config_management/components/). This folder contains a set of commonly used features or properties that can be enabled at the org level.
+* `overlays/templates/env-components`: This folder contains a set of Kustomize components for  commonly used features or properties that can be enabled at the env level. 
+* `overlays/<instance-id>`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
 * `overlays/instance1/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
 
 ```sh
 .
 ├── base
-│   ├── controller
-│   │   ├── APIGEE CONTROLLER MANIFESTS
-│   │   └── kustomization.yaml
-│   ├── datastore
-│   │   ├── DATA STORE MANIFESTS
-│   │   └── kustomization.yaml
-│   ├── environment
-│   │   ├── ENV MANIFESTS
-│   │   └── kustomization.yaml
-│   ├── envoyfilters
-│   │   ├── ISTIO MANIFESTS
-│   │   └── kustomization.yaml
-│   └── organization
-│       ├── ORG MANIFESTS
-│       └── kustomization.yaml
+│   ├── controller
+│   │   ├── APIGEE CONTROLLER MANIFESTS
+│   │   └── kustomization.yaml
+│   ├── datastore
+│   │   ├── DATA STORE MANIFESTS
+│   │   └── kustomization.yaml
+│   ├── environment
+│   │   ├── ENV MANIFESTS
+│   │   └── kustomization.yaml
+│   ├── envoyfilters
+│   │   ├── ISTIO MANIFESTS
+│   │   └── kustomization.yaml
+│   └── organization
+│       ├── ORG MANIFESTS
+│       └── kustomization.yaml
 ├── cluster
-│   ├── crds
-│   │   └── APIGEE CRDs
-│   └── APIGEE CLUSTER RESOURCES
+│   ├── crds
+│   │   └── APIGEE CRDs
+│   └── APIGEE CLUSTER RESOURCES
 ├── overlays
-│   ├── controller
-│   │   ├── CONTROLLER OVERLAYS
-│   │   └── kustomization.tmpl
-│   ├── instance1
-│   │   ├── kustomization.yaml
-│   │   ├── namespace.yaml
-│   │   ├── cass-backup
-│   │   │   ├── CASSANDRA BACKUP OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── cass-replicas
-│   │   │   ├── CASSANDRA REPLICA OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── enable-host-network
-│   │   │   └── kustomization.yaml
-│   │   ├── envgroup
-│   │   │   ├── INGRESS OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── environments
-│   │   │   └── <ENV>
-│   │   │       ├── client_secret.json
-│   │   │       ├── node-selector
-│   │   │       │   ├── env-nodeselector.yaml
-│   │   │       │   └── kustomization.yaml
-│   │   │       ├── runtime-replicas
-│   │   │       │   ├── kustomization.yaml
-│   │   │       │   └── replicas.yaml
-│   │   │       └── secrets
-│   │   │           └── kustomization.yaml
-│   │   ├── google-service-accounts
-│   │   │   ├── client_secret.json
-│   │   │   └── kustomization.yaml
-│   │   ├── http-proxy
-│   │   │   ├── HTTP PROXY OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── logger
-│   │   │   ├── LOGGER OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── metrics
-│   │   │   ├── METRICS OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── multi-region
-│   │   │   └── MULTI_REGION OVERLAYS
-│   │   ├── node-selector
-│   │   │   └── NODE SELECTOR OVERLAYS
-│   │   ├── pullsecret
-│   │   │   └── IMAGE PULL SECRET OVERLAYS
-│   │   ├── runtime-replicas
-│   │   │   ├── RUNTIME REPLICA OVERLAYS
-│   │   │   └── kustomization.yaml
-│   │   ├── secrets
-│   │   │   └── kustomization.yaml
-│   │   └── workload-identity
-│   │       ├── WORKLOAD IDENTITY OVERLAYS
-│   │       └── kustomization.yaml
-│   └── templates
-│       ├── annotate.tmpl
-│       ├── apigee-cassandra-backup-cronjob.tmpl
-│       ├── apigeerouteconfig.tmpl
-│       ├── certificate.tmpl
-│       ├── env-kustomization.tmpl
-│       ├── env.tmpl
-│       ├── logger.tmpl
-│       ├── metrics.tmpl
-│       ├── multi-region-kustomization.tmpl
-│       ├── org-sa.tmpl
-│       ├── org.tmpl
-│       └── secrets.tmpl
+│   ├── controller
+│   │   ├── CONTROLLER OVERLAYS
+│   │   └── kustomization.tmpl
+│   ├── <INSTANCE>
+│   │   ├── kustomization.yaml
+│   │   ├── namespace.yaml
+│   │   ├── <ORG COMPONENTS>
+│   │   ├── environments
+│   │   │   └── <ENV>
+│   │   │       ├── client_secret.json
+│   │   │       ├── kustomization.yaml
+│   │   │       └── <ENV COMPONENTS>
+│   └── templates
+│       └── KUBERNETES MANIFEST TEMPLATES
+│   ├── env-components
+│   │   └── ENV SCOPED COMPONENTS
+│   ├── org-components
+│   │   └── ORG SCOPED COMPONENTS
 ├── primary
-│   └── apigee-ca-certificate.yaml
+│   └── apigee-ca-certificate.yaml
 └── vars.sh
 ```
+
+The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV>` are generated based on environment variables. The `generateOrgKustomize.sh` and `generateEnvKustomize.sh` scripts generate Kustomize from templates (in `./overlays/templates`).
 
 ## Setup Variables
 
@@ -133,11 +86,11 @@ Open the [vars.sh](./vars.sh) and [env-vars.sh](./env-vars.sh) to ensure the fol
 
 ## Install Order
 
-Follow the instructions in [install.sh](./install.sh). If not using workload identity, download teh GSA private key. The file must be called `client_secret.json`. Place this file in `./overlay/instance1/environments/${ENV_NAME}`, `./overlay/instance1/google-service-accounts`
+Follow the instructions in [install.sh](./install.sh). If not using workload identity, download teh GSA private key. The file must be called `client_secret.json`. Place this file in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`
 
 ## Kustomize
 
-Features and/properties of the installation can be modified by commenting or uncommenting the [kustomization.tmpl](./overlays/instance1/kustomization.tmpl) file. The kustomize template for the controller is [here](./overlays/controller/kustomization.tmpl). The following feature for the org are enabled by default
+Features and/properties of the installation can be modified by commenting or uncommenting the `kustomization.yaml` file in the instance folder. The following features for an org are enabled by default:
 
 ```yaml
 components:
@@ -174,19 +127,11 @@ components:
 #- pullsecret
 ```
 
-The org kustomization file is generated via the script `generateOrgKustomize.sh`
-
-
-The kustomize template for environments can be found
-[here](./overlays/templates/env-kustomization.tmpl). The env kustomixation file
-is generated via the script `generateEnvKustomize.sh`.
-
+The org kustomization file is generated via the script `generateOrgKustomize.sh`. The kustomize template for environments can be found [here](./overlays/templates/env-kustomization.tmpl). The env kustomization file is generated via the script `generateEnvKustomize.sh`.
 
 ### Default Ingress Configuration
 
-This installation generates a self-signed certificate, signed by the [Apigee
-CA](./clusters/foo.yaml). The certificate template is
-[here](./overlays/templates/certificate.tmpl)
+This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl)
 
 ### Add a new environment
 
@@ -198,25 +143,15 @@ These steps assume the Apigee Organization and other components are already inst
 source env-vars.sh
 ```
 
-2. Create a new folder for the environment in the `./overlays/instances1/environments` folder.
-
-```sh
-mkdir ./overlays/instances1/environments/${ENV_NAME}
-```
-
-3. Copy any components to the new environment folder
-
-```sh
-cp -r ./overlays/instances1/environments/<OLD-ENV-NAME> ./overlays/instances1/environments/${ENV_NAME}
-```
-
-4. Generate the kustomize manifests for the environment
+2. Generate the kustomize manifests for the environment
 
 ```sh
 ./generateEnvKustomize.sh
 ```
 
-5. Apply the Kubernetes manifests
+Edit the generated/default `kustomization.yaml` file if needed. Optionally, add the new environment in the `./overlays/${INSTANCE_ID}/environments/kustomizations.yaml` file.
+
+3. Apply the Kubernetes manifests
 
 To apply a single environment,
 
@@ -230,17 +165,18 @@ To apply all environments,
 kubectl apply -k ./overlays/instance1/environments
 ```
 
-
 ### Adding a second region
 
 In most cases, an Apigee Organization is identical across data centers or regions. In Apigee terms, an Apigee runtime deployment of an org is called an Apigee instance. Instances of an Org are typically identical.
 
-1. Make a copy of all the files in the first instance to the new instance.
+1. Change/set the environment variable `INSTANCE_ID`. Add env variables for `SEED_HOST` and `DATA_CENTER` in [vars.sh](./vars.sh)
+
+Make a copy of all the files in the first instance to the new instance.
 
 ```sh
-mkdir ./overlays/instance2
+mkdir ./overlays/${INSTANCE_ID}
 
-cp -r ./overlays/instance1/* ./overlays/instance2/
+cp -r ./overlays/<OLD-INSTANCE>/* ./overlays/${INSTANCE_ID}/
 ```
 
 2. Modify the kustomization.yaml in new instance. Enable the multi-region feature.
@@ -262,16 +198,15 @@ components:
 
 ```sh
 # ensure kubeconfing points to the first cluster
-. ./overlay/instance1/multi-region/get-tls-keys.sh
+./get-tls-keys.sh
 ```
 
-This will generate `tls.key` and `tls.cert`. Change the kubeconfig to the new cluster.
+This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new cluster
 
-4. Change the `INSTANCE_ID` variable in [vars.sh](./vars.sh). Add variables for `SEED_HOST` and `DATA_CENTER`
+4. Follow the steps in [expand.sh](./expand.sh).
 
-5. Follow the instructions in [install.sh](./install). **Do not** execute step 5 on second (and other) regions
 
-### Other considertions
+### Other considerations
 
 * One could manage envgroups separately from the org. This is useful when there are many envgroups and need to be managed independent of other org changes.
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
@@ -292,6 +227,7 @@ This will generate `tls.key` and `tls.cert`. Change the kubeconfig to the new cl
 * OpenSSL 1.1.1l
 * bash 5.1.8
 * envsubst 0.21
+* helm v3.7.2
 
 ___
 

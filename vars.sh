@@ -21,7 +21,7 @@ export ASM_MINOR_VERSION=12
 export HUB=gcr.io/apigee-release/hybrid
 export TAG=1.6.3
 
-export INSTANCE_ID=us-west1
+export INSTANCE_ID=instance1
 export GSA=apigee
 
 export ORG_NAME=srinandans-hybrid

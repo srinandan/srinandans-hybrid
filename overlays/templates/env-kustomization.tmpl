@@ -16,6 +16,10 @@ images:
   newTag: ${TAG}
 - name: ${HUB}/apigee-udca
   newTag: ${TAG}
+- name: ${HUB}/apigee-mart-server
+  newTag: ${TAG}
+- name: ${HUB}/apigee-stackdriver-logging-agent
+  newTag: 1.8.9
 
 resources:
 - ../../../../base/environment
@@ -24,6 +28,7 @@ components:
 - node-selector
 - secrets
 #- runtime-replicas
+#- google-service-accounts
 
 patches:
 - path: env.yaml
@@ -65,24 +70,3 @@ patches:
     kind: ServiceAccount
     name: apigee-udca-env-sa
     version: v1
-
-# enable the following if not using workload identity
-#secretGenerator:
-#- name: apigee-udca-${ORG}-${ENV}-svc-account
-#  namespace: apigee
-#  options:
-#    disableNameSuffixHash: true
-#  files:
-#  - client_secret.json
-#- name: apigee-synchronizer-${ENV}-svc-account
-#  namespace: apigee
-#  options:
-#    disableNameSuffixHash: true
-#  files:
-#  - client_secret.json
-#- name: apigee-rutime-${ENV}-svc-account
-#  namespace: apigee
-#  options:
-#    disableNameSuffixHash: true
-#  files:
-#  - client_secret.json

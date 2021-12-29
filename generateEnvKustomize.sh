@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+mkdir ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}
+cp -r ./overlays/env-components/* ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/
 
 # run one per environment name
 envsubst < ./overlays/templates/env-kustomization.tmpl > ./overlays/instance1/environments/${ENV_NAME}/kustomization.yaml
 envsubst < ./overlays/templates/env.tmpl > ./overlays/instance1/environments/${ENV_NAME}/env.yaml
+envsubst < ./overlays/templates/env-gsa.tmpl > ./overlays/instance1/environments/${ENV_NAME}/google-service-accounts/env.yaml
+envsubst < ./overlays/templates/env-gsa-kustomization.tmpl > ./overlays/instance1/environments/${ENV_NAME}/google-service-accounts/kustomization.yaml
 envsubst < ./overlays/templates/env-secrets.tmpl > ./overlays/instance1/environments/${ENV_NAME}/secrets/kustomization.yaml
 
 #kustomize build overlays/instance1/environments/prod1 -o prod1.yaml

@@ -15,18 +15,23 @@
 
 #source vars.sh
 
-envsubst < ./overlays/templates/org.tmpl > ./overlays/instance1/org.yaml
-envsubst < ./overlays/templates/org-sa.tmpl > ./overlays/instance1/org-sa.yaml
-envsubst < ./overlays/templates/org-secrets.tmpl > ./overlays/instance1/secrets/kustomization.yaml
-envsubst < ./overlays/templates/metrics.tmpl > ./overlays/instance1/metrics/metrics.yaml
+mkdir ./overlays/${INSTANCE_ID}
+cp -r ./overlays/org-components/* ./overlays/${INSTANCE_ID}/
+
+envsubst < ./overlays/templates/org.tmpl > ./overlays/${INSTANCE_ID}/org.yaml
+envsubst < ./overlays/templates/org-sa.tmpl > ./overlays/${INSTANCE_ID}/org-sa.yaml
+envsubst < ./overlays/templates/org-secrets.tmpl > ./overlays/${INSTANCE_ID}/secrets/kustomization.yaml
+envsubst < ./overlays/templates/org-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/kustomization.yaml
+envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
+envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics/metrics.yaml
 
 # disable if not using workload identity
-envsubst < ./overlays/templates/annotate.tmpl > ./overlays/instance1/workload-identity/annotate.yaml
+envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 
 # run one per env group
-envsubst < ./overlays/templates/certificate.tmpl > ./overlays/instance1/envgroup/certificate.yaml
-envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/instance1/envgroup/apigeerouteconfig.yaml
+envsubst < ./overlays/templates/certificate.tmpl > ./overlays/${INSTANCE_ID}/envgroup/certificate.yaml
+envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/${INSTANCE_ID}/envgroup/apigeerouteconfig.yaml
 
-envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/instance1/kustomization.yaml
+envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/${INSTANCE_ID}/kustomization.yaml
 
-#kustomize build overlays/instance1 -o instance1.yaml
+#kustomize build overlays/${INSTANCE_ID} -o ${INSTANCE_ID}.yaml

@@ -14,6 +14,23 @@
 
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
+
+patches:
+# Enable this patch to add GSA an org
+- path: org.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeOrganization
+    name: .*
+    version: v1alpha2
+# Enable this patch to add GSA to telemetry
+- path: telemetry.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeTelemetry
+    name: .*
+    version: v1alpha1
+
 secretGenerator:
 - name: apigee-connect-agent-${ORG}-svc-account
   namespace: apigee

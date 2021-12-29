@@ -1,0 +1,11 @@
+apiVersion: apigee.cloud.google.com/v1alpha2
+kind: ApigeeOrganization
+metadata:
+  name: org
+spec:
+  components:
+      appServiceAccountSecretName: apigee-watcher-${ORG}-sa
+    mart:
+      appServiceAccountSecretName: apigee--mart-${ORG}-sa
+    udca:
+      appServiceAccountSecretName: apigee-udca-${ORG}-sa

@@ -33,29 +33,23 @@ chmod +x asmcli
   --enable_all --option legacy-default-ingressgateway \
   --ca mesh_ca
 
-# step 3: install crds
+# step 3: Create Apigee CA
+kubectl create secret tls apigee-ca -n cert-manager --cert=tls.crt --key=tls.key
+
+# step 4: install crds
 kubectl create -f cluster/crds
 
-# step 4: create cluster resources
+# step 5: create cluster resources
 kubectl apply -f cluster
 
-# step 5: install CA cert in primary region only
-kubectl apply -f primary/apigee-ca-certificate.yaml
-
-# step 6: install apigee controller
-./generateControllerKustomize.sh
+# step 6: install apigee controller. Controller kustomize scripts were already created.
 kubectl apply -k overlays/controller
 
-# step 7: generate kustomize manifests from templates
-./generateOrgKustomize.sh
-# inspect the kustomization.yaml file in ./overlays/${INSTANCE_ID}. Enable or
-# disable features as necessary
+# step 7: Generate kustomize for expnding Cassandra
+./generateMultiRegionKustomize.sh
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
 kubectl apply -k overlays/${INSTANCE_ID}
 
-# step 9: generate kustomize manifests from templates
-./generateEnvKustomize.sh
-
-# step 10: install the apigee environment
+# step 9: install the apigee environment
 kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME}

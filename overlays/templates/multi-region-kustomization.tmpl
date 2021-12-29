@@ -19,13 +19,3 @@ patches:
     kind: ApigeeDatastore
     name: .*
     version: v1alpha1
-
-secretGenerator:
-- name: apigee-ca
-  namespace: cert-manager
-  type: "kubernetes.io/tls"
-  options:
-    disableNameSuffixHash: true
-  files:
-  - tls.crt
-  - tls.key
