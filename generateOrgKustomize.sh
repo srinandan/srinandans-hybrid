@@ -29,7 +29,7 @@ envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics
 envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 
 # run one per env group
-envsubst < ./overlays/templates/certificate.tmpl > ./overlays/${INSTANCE_ID}/envgroup/certificate.yaml
+envsubst < ./overlays/templates/certificate.tmpl > ./overlays/certificates/certificate-${ENV_GROUP}.yaml
 envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/${INSTANCE_ID}/envgroup/apigeerouteconfig.yaml
 
 envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/${INSTANCE_ID}/kustomization.yaml
