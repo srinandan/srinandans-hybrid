@@ -19,7 +19,7 @@ patches:
 - patch: |-
     - op: replace
       path: /spec/template/metadata/labels/revision
-      value: ${VERSION}
+      value: "${VERSION}"
   target:
     kind: Deployment
     name: apigee-controller-manager
