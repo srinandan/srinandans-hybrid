@@ -4,8 +4,11 @@ metadata:
   name: org
 spec:
   components:
-      appServiceAccountSecretName: apigee-watcher-${ORG}-sa
+    connectAgent:
+      appServiceAccountSecretName: apigee-connect-agent-${ORG}-svc-account
+    watcher:
+      appServiceAccountSecretName: apigee-watcher-${ORG}-svc-account
     mart:
-      appServiceAccountSecretName: apigee--mart-${ORG}-sa
+      appServiceAccountSecretName: apigee-mart-${ORG}-svc-account
     udca:
-      appServiceAccountSecretName: apigee-udca-${ORG}-sa
+      appServiceAccountSecretName: apigee-udca-${ORG}-svc-account
