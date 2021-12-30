@@ -33,7 +33,7 @@ chmod +x asmcli
   --cluster_location ${CLUSTER_REGION} \
   --fleet_id ${PROJECT_ID} \
   --enable_all --option legacy-default-ingressgateway \
-  --ca mesh_ca --custom_overlay=./asm/overlay.yaml
+  --ca mesh_ca --custom_overlay=./overlays/asm/overlay.yaml
 
 # step 3: install CA cert in primary region only
 kubectl apply -f primary/apigee-ca-certificate.yaml
