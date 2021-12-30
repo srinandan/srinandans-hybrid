@@ -213,7 +213,7 @@ This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new clu
 
 ### Other considerations
 
-* One could manage envgroups separately from the org. This is useful when there are many envgroups and need to be managed independent of other org changes.
+* One could manage envgroups separately from the org. This is useful when there are many envgroups and need to be managed independent of other org changes. See the `envgroups` branch for how this is done.
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
 * Integrate with ArgoCD, Flux or Anthos Config Management for GitOps.
 
