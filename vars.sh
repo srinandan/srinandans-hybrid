@@ -27,6 +27,10 @@ export GSA=apigee
 export ORG_NAME=srinandans-hybrid
 export ENV_GROUP=default
 
+#if cassandra backup is enabled, uncomment this
+#export GCS_BUCKET=my-bucket
+
+####
 export VERSION=${${TAG}//./}
 export UC_ORG_NAME=$(echo "${ORG_NAME}" | awk '{print toupper($0)}')
 
