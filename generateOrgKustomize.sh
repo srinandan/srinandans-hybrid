@@ -25,6 +25,10 @@ envsubst < ./overlays/templates/org-gsa-kustomization.tmpl > ./overlays/${INSTAN
 envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
 envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics/metrics.yaml
 
+#if Cassandra backup is enabled, uncomment this
+#envsubst < ./overlays/templates/apigee-cassandra-backup-cronjob.tmpl > ./overlays/${INSTANCE_ID}/cass-backup/apigee-cassandra-backup-cronjob.yaml
+#envsubst < ./overlays/templates/cass-backup-kustomization.tmpl > ./overlays/${INSTANCE_ID}/cass-backup/kustomization.yaml
+
 # disable if not using workload identity
 envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 

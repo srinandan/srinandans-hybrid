@@ -15,6 +15,26 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/components/cassandra/containers/0/env/2/value
+      value: GCP
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeDatastore
+    name: .*
+    version: v1alpha1
+- patch: |-
+    - op: replace
+      path: /spec/components/cassandra/containers/0/env/3/value
+      value: ${GCS_BUCKET}
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeDatastore
+    name: .*
+    version: v1alpha1
+
 resources:
   - apigee-cassandra-backup-cronjob.yaml
   - apigee-cassandra-backup-sa.yaml
