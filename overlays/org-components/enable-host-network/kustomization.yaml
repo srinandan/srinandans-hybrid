@@ -24,3 +24,12 @@ patches:
     kind: ApigeeDatastore
     name: .*
     version: v1alpha1
+- patch: |-
+    - op: add
+      path: /spec/components/cassandra/dnsPolicy
+      value: ClusterFirstWithHostNet
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeDatastore
+    name: .*
+    version: v1alpha1
