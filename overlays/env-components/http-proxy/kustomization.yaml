@@ -16,24 +16,10 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
-# Enable this patch to add http proxy to an org
-- path: org-proxy.yaml
+# Enable this patch to add http proxy to an environment
+- path: env-proxy.yaml
   target:
     group: apigee.cloud.google.com
-    kind: ApigeeOrganization
+    kind: ApigeeEnvironment
     name: .*
     version: v1alpha2
-# Enable this patch to add http proxy to telemetry
-- path: tele-proxy.yaml
-  target:
-    group: apigee.cloud.google.com
-    kind: ApigeeTelemetry
-    name: .*
-    version: v1alpha1
-# Enable this patch to add http proxy to cassandra
-- path: cass-proxy.yaml
-  target:
-    group: apigee.cloud.google.com
-    kind: ApigeeDatastore
-    name: .*
-    version: v1alpha1

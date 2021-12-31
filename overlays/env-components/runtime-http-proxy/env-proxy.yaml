@@ -1,0 +1,12 @@
+apiVersion: apigee.cloud.google.com/v1alpha2
+kind: ApigeeEnvironment
+metadata:
+  name: env
+spec:
+  components:
+    runtime:
+      configOverride:
+        "conf_http_HTTPClient.use.proxy": "true"
+        "conf/http.properties+HTTPClient.proxy.host": "myproxy.example.com"
+        "conf/http.properties+HTTPClient.proxy.type": "HTTP"
+        "conf/http.properties+HTTPClient.proxy.port": "3128"
