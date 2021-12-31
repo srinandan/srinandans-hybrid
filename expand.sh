@@ -32,7 +32,7 @@ chmod +x asmcli
   --cluster_name ${CLUSTER_NAME} \
   --cluster_location ${CLUSTER_REGION} \
   --fleet_id ${PROJECT_ID} \
-  --enable_all --option legacy-default-ingressgateway \
+  --enable_all \
   --ca mesh_ca
 
 # step 3: Create Apigee CA

@@ -11,8 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 apiVersion: v1
-kind: Namespace
+kind: Service
 metadata:
-  name: apigee
+  name: istio-ingressgateway
+  labels:
+    app: istio-ingressgateway
+    istio: ingressgateway
+spec:
+  ports:
+  # status-port exposes a /healthz/ready endpoint that can be used with GKE Ingress health checks
+  - name: status-port
+    port: 15021
+    protocol: TCP
+    targetPort: 15021
+  - name: https
+    port: 443
+  selector:
+    istio: ingressgateway
+    app: istio-ingressgateway
+  type: LoadBalancer

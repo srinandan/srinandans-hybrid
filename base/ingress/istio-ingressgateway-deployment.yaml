@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway
+  namespace: apigee
+spec:
+  selector:
+    matchLabels:
+      istio: ingressgateway
+      app: istio-ingressgateway
+  template:
+    metadata:
+      annotations:
+        inject.istio.io/templates: gateway
+      labels:
+        istio: ingressgateway
+        app: istio-ingressgateway
+        # Enable gateway injection. If connecting to a revisioned control plane, replace with "istio.io/rev: revision-name"
+        sidecar.istio.io/inject: "true"
+        istio.io/rev: asm-1120-4
+    spec:
+      serviceAccountName: istio-ingressgateway
+      containers:
+      - name: istio-proxy
+        image: auto # The image will automatically update each time the pod starts.
