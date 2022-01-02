@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: apigee-wildcard-gateway
+spec:
+  selector:
+    app: istio-ingressgateway
+  servers:
+  - hosts:
+    - "*"
+    port:
+      name: https-apigee-443
+      number: 443
+      protocol: HTTPS
+    tls:
+      credentialName: ${ORG_NAME}-${ENV_GROUP}
+      mode: SIMPLE

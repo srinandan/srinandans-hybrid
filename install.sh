@@ -36,17 +36,17 @@ chmod +x asmcli
   --ca mesh_ca
 
 # step 3: install CA cert in primary region only
-kubectl apply -f primary/apigee-ca-certificate.yaml
+kubectl apply -f primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
 
 # step 4: install crds
-kubectl create -f cluster/crds
+kubectl create -f cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
 
 # step 5: create cluster resources
 kubectl apply -f cluster
 
 # step 6: install apigee controller
 ./generateControllerKustomize.sh
-kubectl apply -k overlays/controller
+kubectl apply -k overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
 # step 7: generate kustomize manifests from templates
 ./generateOrgKustomize.sh
@@ -54,13 +54,13 @@ kubectl apply -k overlays/controller
 # disable features as necessary
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
-kubectl apply -k overlays/${INSTANCE_ID}
+kubectl apply -k overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
-# step 9: Apply the self-signed certificate
-kubectl apply -f overlays/certificates/certificate-${ENV_GROUP}.yaml
-
-# step 10: generate env kustomize manifests from templates
+# step 9: generate env kustomize manifests from templates
 ./generateEnvKustomize.sh
 
-# step 11: install the apigee environment
-kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME}
+# step 10: install the apigee environment
+kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
+
+# step 11: Enable Apigee envoyfilters for ASM
+kubectl apply -k overlays/envoyfilters

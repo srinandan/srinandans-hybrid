@@ -1,0 +1,43 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: apigee-ingress
+  annotations:
+    kubernetes.io/ingress.allow-http: "false"
+    # if using a managed certificate, add name here
+#   networking.gke.io/managed-certificates: "MANAGED-CERT-NAME"
+    kubernetes.io/ingress.global-static-ip-name: "ADD-IP-ADDRESS-NAME"
+    kubernetes.io/ingress.class: "gce"
+spec:
+  defaultBackend:
+    service:
+      name: istio-ingressgateway
+      port:
+        number: 443
+# set the secret name
+# tls:
+#   - secretName: ${ORG_NAME}-${ENV_GROUP}
+  rules:
+  - http:
+      paths:
+      - path: /*
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: istio-ingressgateway
+            port:
+              number: 443

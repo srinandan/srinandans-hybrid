@@ -22,6 +22,8 @@ export HUB=gcr.io/apigee-release/hybrid
 export TAG=1.6.3
 
 export INSTANCE_ID=instance1
+
+# Google service account name
 export GSA=apigee
 
 export ORG_NAME=srinandans-hybrid

@@ -13,7 +13,9 @@ This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](htt
 
 Creating an appropriate folder structure is key to using kustomize. The folder structure below isn't the only approach. Here is a brief explanation of the folders:
 
-* `base`: This folder contains the Kubernetes manifests of ApigeeOrganization, ApigeeEnvironment, ApigeeDatastore and other components of the runtime. Within the folder, there are sub folders per component - `controller`, `organization`, `environment` and `envoyfilters`
+* `base`: This folder contains the Kubernetes manifests of ApigeeOrganization, ApigeeEnvironment, ApigeeDatastore and other components of the runtime. Within the folder, there are sub folders per component - `controller`, `organization`, `environment` and `datastore`
+* `base/ingress`: This folder contains manifests for an Istio based ingress. This method is described [here](https://cloud.google.com/service-mesh/docs/gateways). It is recommended that istio ingresses are are installed **outside** of the `istio-system` namespace
+* `base/envoyfilters`: This folder contains Istio EnvoyFilters used by Apigee
 * `cluster`: This folder contains cluster level resources like `ClusterRoleBinding`, `CustomResourceDefinitions` etc
 * `primary`: This folder contains a CA cert file which must only be executed in the primary cluster. Technically speaking, Apigee hybrid has not concept of primary vs. secondary regions. If you have more than one region for the Apigee hybrid deployment, select the first region  as the primary.
 * `overlays/templates`: This folder contains templates that are used to generate Kubernetes manifests
@@ -21,7 +23,8 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 * `overlays/templates/env-components`: This folder contains a set of Kustomize components for  commonly used features or properties that can be enabled at the env level
 * `overlays/<instance-id>`: Create a folder per Apigee Instance. `instance1` is a placeholder name. An Apigee instance is a Apigee hybrid runtime installed in a region or data center.
 * `overlays/<instance-id>/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
-* `overlays/certificates`: This folder contains the certificates for northbound TLS
+* `overlays/<instance-id>/envgroups/<env-group-name>`: There is a folder for each Apigee environment group. ech env group contains a certificate and ApigeeRouteConfig.
+* `overlays/envoyfilters`: This folder contains envoyfilters to be applied to each Apigee instance
 
 ```sh
 .
@@ -38,6 +41,9 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 │   ├── envoyfilters
 │   │   ├── ISTIO MANIFESTS
 │   │   └── kustomization.yaml
+│   ├── ingress
+│   │   ├── INGRESS MANIFESTS
+│   │   └── kustomization.yaml
 │   └── organization
 │       ├── ORG MANIFESTS
 │       └── kustomization.yaml
@@ -53,19 +59,23 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 │   │   ├── kustomization.yaml
 │   │   ├── namespace.yaml
 │   │   ├── <ORG COMPONENTS>
+│   │   ├── envgroups
+│   │   │   └── <ENV GROUP>
+│   │   │       ├── <ENV GROUP MANIFESTS>
+│   │   │       └── kustomization.yaml
 │   │   ├── environments
 │   │   │   └── <ENV>
 │   │   │       ├── client_secret.json
 │   │   │       ├── kustomization.yaml
 │   │   │       └── <ENV COMPONENTS>
-│   ├── certificates
-│   │   └── TLS CERTS
-│   └── templates
-│       └── KUBERNETES MANIFEST TEMPLATES
+│   ├── templates
+│   │   └── KUBERNETES MANIFEST TEMPLATES
 │   ├── env-components
 │   │   └── ENV SCOPED COMPONENTS
 │   ├── org-components
 │   │   └── ORG SCOPED COMPONENTS
+│   ├── envoyfilters
+│   │   └── <APIGEE ENVOY FILTERS>
 ├── primary
 │   └── apigee-ca-certificate.yaml
 └── vars.sh
@@ -106,37 +116,18 @@ components:
 # Generate default secrets for encryption, cassandra auth etc.
 - secrets
 # Generate ingress configuration via self-signed certs
-- envgroup
+- envgroups
 # Enable Apigee metrics
 - metrics
-
-# Use Google service accounts instead of workload identity
-#- google-service-accounts
-
-# Setup Apigee for multi-cluster deployments
-#- multi-region
-
-# Enable host Network for Cassandra multi-region communication
-#- enable-host-network
-
-# Change Cassandra replicas
-#- cass-replicas
-
-# Enable Cassandra backup
-#- cass-backup
-
-# Enable Apigee logger to send container logs to Cloud logging
-#- logger
-
-# Configure Image Pull Secrets for containers
-#- pullsecret
+...
+...
 ```
 
 The org kustomization file is generated via the script `generateOrgKustomize.sh`. The kustomize template for environments can be found [here](./overlays/templates/env-kustomization.tmpl). The env kustomization file is generated via the script `generateEnvKustomize.sh`.
 
 ### Default Ingress Configuration
 
-This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl). The generated certificate is stored in `./overlays/certificates`
+This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl).
 
 ### Add a new environment
 
@@ -213,9 +204,39 @@ This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new clu
 
 ### Other considerations
 
-* One could manage envgroups separately from the org. This is useful when there are many envgroups and need to be managed independent of other org changes. See the `envgroups` branch for how this is done.
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
 * Integrate with ArgoCD, Flux or Anthos Config Management for GitOps.
+
+## Components
+
+The following components are included. Enable/disable these features as necessary in the kustomization.yaml file.
+
+* Instance and Org Components
+  - `cass-backup`: Enable Cassandra backup to GCP (GCS)
+  - `cass-production`: Set recommended Cassandra resources for production (mem, CPU etc.)
+  - `cass-replicas`: Set Cassandra replicas
+  - `enable-host-network`: Enable hostNetwork on platforms like GKE on-prem
+  - `envgroups`: Include ingress settings for environment groups
+  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts
+  - `http-proxy`: Use http forward proxy to communicate with the Apigee control plane
+  - `logger`: Enable Apigee logger
+  - `metrics`: Enable Apigee metrics
+  - `multi-region`: Setup Cassandra for multi-region
+  - `node-selector`: Use node selectors for org components
+  - `pullsecret`: Set a Image Pull Secret
+  - `secrets`: Generate Kubernetes secrets for org components
+  - `workload-identity`: Enable workload identity for org components (only for GKE)
+  - `ingress-annotations`: Add annotations to the istio-ingressgateway service
+  - `wildcard-gateway`: Creates a wildcard Gateway (Istio CR) and adds additionalGateways configuration to ApigeeRouteConfig
+
+* Environment Components
+  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts
+  - `http-proxy`: Use http forward proxy to communicate with the Apigee control plane
+  - `node-selector`: Use node selectors for env components
+  - `runtime-http-proxy`: Use http forward proxy when API Proxies talk to backend/targets
+  - `runtime-replicas`: Set runtime replicas
+  - `secrets`: Generate Kubernetes secrets for env components
+  - `workload-identity`: Enable workload identity for env components (only for GKE)
 
 ## Versions
 

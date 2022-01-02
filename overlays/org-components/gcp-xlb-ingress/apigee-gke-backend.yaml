@@ -12,12 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Set up roles to allow reading credentials for TLS
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
 metadata:
-  name: istio-ingressgateway-sds
-rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "watch", "list"]
+  name: apigee-backendconfig
+spec:
+  timeoutSec: 181
+  healthCheck:
+    requestPath: /healthz/ready
+    port: 15021
+    type: HTTP
+    sampleRate: 0.1

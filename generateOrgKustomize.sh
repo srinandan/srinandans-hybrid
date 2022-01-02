@@ -15,7 +15,7 @@
 
 #source vars.sh
 
-mkdir ./overlays/${INSTANCE_ID}
+mkdir -p ./overlays/${INSTANCE_ID}
 cp -r ./overlays/org-components/* ./overlays/${INSTANCE_ID}/
 
 envsubst < ./overlays/templates/org.tmpl > ./overlays/${INSTANCE_ID}/org.yaml
@@ -33,9 +33,11 @@ envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics
 envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 
 # run one per env group
-envsubst < ./overlays/templates/certificate.tmpl > ./overlays/certificates/certificate-${ENV_GROUP}.yaml
-envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/${INSTANCE_ID}/envgroup/apigeerouteconfig.yaml
+./generateEnvGrpKustomize.sh
 
 envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/${INSTANCE_ID}/kustomization.yaml
+
+# generate configuration for envoy filters
+envsubst < ./overlays/templates/envoyfilters-kustomization.tmpl > ./overlays/envoyfilters/kustomization.yaml
 
 #kustomize build overlays/${INSTANCE_ID} -o ${INSTANCE_ID}.yaml

@@ -44,3 +44,10 @@ patches:
     kind: ApigeeTelemetry
     name: .*
     version: v1alpha1
+# Enable this patch to add node selectors to istio ingress
+- path: istio-nodeselector.yaml
+  target:
+    group: apps
+    kind: Deployment
+    name: apigee-istio-ingressgateway
+    version: v1

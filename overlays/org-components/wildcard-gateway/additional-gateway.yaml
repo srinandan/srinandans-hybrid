@@ -12,12 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Set up roles to allow reading credentials for TLS
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+apiVersion: apigee.cloud.google.com/v1alpha1
+kind: ApigeeRouteConfig
 metadata:
-  name: istio-ingressgateway-sds
-rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "watch", "list"]
+  name: default
+spec:
+  additionalGateways:
+  - apigee-wildcard-gateway

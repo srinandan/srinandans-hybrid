@@ -32,8 +32,9 @@ spec:
     patch:
       operation: MERGE
       value:
-        config:
-          server_name: "apigee"
+        typed_config:
+          "@type": "type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager"
+          server_header_transformation: PASS_THROUGH
   - applyTo: ROUTE_CONFIGURATION
     patch:
       operation: MERGE

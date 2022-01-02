@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}
+mkdir -p ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 cp -r ./overlays/env-components/* ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/
 
 # run one per environment name
