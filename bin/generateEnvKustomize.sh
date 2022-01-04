@@ -20,7 +20,9 @@ cp -r ./overlays/env-components/* ./overlays/${INSTANCE_ID}/environments/${ENV_N
 envsubst < ./overlays/templates/env-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/kustomization.yaml
 envsubst < ./overlays/templates/env.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/env.yaml
 envsubst < ./overlays/templates/env-gsa.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/env.yaml
+envsubst < ./overlays/templates/env-gsa.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/env.yaml
 envsubst < ./overlays/templates/env-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/kustomization.yaml
+envsubst < ./overlays/templates/env-multi-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/kustomization.yaml
 envsubst < ./overlays/templates/env-secrets.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/secrets/kustomization.yaml
 
 # disable if not using workload identity

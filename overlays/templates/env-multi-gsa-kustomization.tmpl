@@ -30,16 +30,16 @@ secretGenerator:
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
+  - ./runtime/client_secret.json
 - name: apigee-udca-${ENV}-svc-account
   namespace: apigee
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
+  - ./udca/client_secret.json
 - name: apigee-synchronizer-${ENV}-svc-account
   namespace: apigee
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
+  - ./synchronizer/client_secret.json

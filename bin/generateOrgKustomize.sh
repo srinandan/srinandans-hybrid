@@ -22,7 +22,9 @@ envsubst < ./overlays/templates/org.tmpl > ./overlays/${INSTANCE_ID}/org.yaml
 envsubst < ./overlays/templates/org-sa.tmpl > ./overlays/${INSTANCE_ID}/org-sa.yaml
 envsubst < ./overlays/templates/org-secrets.tmpl > ./overlays/${INSTANCE_ID}/secrets/kustomization.yaml
 envsubst < ./overlays/templates/org-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/kustomization.yaml
+envsubst < ./overlays/templates/org-multi-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/multi-google-service-accounts/kustomization.yaml
 envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
+envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/multi-google-service-accounts/org.yaml
 envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics/metrics.yaml
 
 #if Cassandra backup is enabled, uncomment this

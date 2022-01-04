@@ -16,30 +16,43 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
 patches:
-# Enable this patch to add GSA an environment
-- path: env.yaml
+# Enable this patch to add GSA an org
+- path: org.yaml
   target:
     group: apigee.cloud.google.com
-    kind: ApigeeEnvironment
+    kind: ApigeeOrganization
     name: .*
     version: v1alpha2
+# Enable this patch to add GSA to telemetry
+- path: telemetry.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeTelemetry
+    name: .*
+    version: v1alpha1
 
 secretGenerator:
-- name: apigee-runtime-${ENV}-svc-account
+- name: apigee-connect-agent-${ORG}-svc-account
   namespace: apigee
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
-- name: apigee-udca-${ENV}-svc-account
+  - ./connect/client_secret.json
+- name: apigee-mart-${ORG}-svc-account
   namespace: apigee
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
-- name: apigee-synchronizer-${ENV}-svc-account
+  - ./mart/client_secret.json
+- name: apigee-watcher-${ORG}-svc-account
   namespace: apigee
   options:
     disableNameSuffixHash: true
   files:
-  - client_secret.json
+  - ./watcher/client_secret.json
+- name: apigee-metrics-svc-account
+  namespace: apigee
+  options:
+    disableNameSuffixHash: true
+  files:
+  - ./telemetry/client_secret.json

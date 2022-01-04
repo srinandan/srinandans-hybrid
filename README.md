@@ -95,13 +95,41 @@ Open the [vars.sh](./bin/vars.sh) and [env-vars.sh](./bin/env-vars.sh) to ensure
 * `CLUSTER_REGION`: GCP Region for the Kubernetes cluster (or closest GCP region if running outside GCP)
 * `CLUSTER_NAME`: Kubernetes cluster name
 * `PROJECT_ID`: GCP Project Id
-* `TAG`: Apigee hybrid version
+* `APIGEE_VERSION`: Apigee hybrid version
 * `INSTANCE_ID`: Apigee Instance name
 * `ASM_MINOR_VERSION`: Anthos Service Mesh minor Version. For example, if installing ASM 1.12, set this to 12
 
-## Install Order
+## Installation
 
-Follow the instructions in [install.sh](./bin/install.sh). If not using workload identity, download the GSA private key. The file must be called `client_secret.json`. Place this file in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`
+Follow the instructions in [install.sh](./bin/install.sh).
+
+### Managing access to the control plane
+
+This installation supports two models to authenticate and authorize access to the control plane:
+* Google Service Accounts
+* Workload Identity
+
+#### Workload Identity
+
+This method is only supported on GKE. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
+
+#### Google Service Accounts
+
+If you are using Google Service Accounts, there are two approaches:
+
+1. Using a single GSA for all components (default method). This is enabled with the `google-service-accounts` kustomize component. To use this method, please the GSA private key (the file must be called `client_secret.json`) in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`. This must be done before calling `./generateOrgKustomize.sh`
+
+2. Use a different GSA for each type of compoennt. This is enabled with the `multi-google-service-accounts` kustomize component. To use this method, please the GSA private key (the file must be called `client_secret.json`in all cases) for: 
+  - mart in `./overlay/org-components/multi-google-service-accounts/mart`
+  - watcher in `./overlay/org-components/multi-google-service-accounts/watcher`
+  - apigee connect in `./overlay/org-components/multi-google-service-accounts/connect`
+  - telemtry/metrics in `./overlay/org-components/multi-google-service-accounts/telemetry`
+  - runtime in `./overlay/env-components/multi-google-service-accounts/runtime`
+  - udca in `./overlay/env-components/multi-google-service-accounts/udca`
+  - synchronizer in `./overlay/env-components/multi-google-service-accounts/synchronizer`
+
+This must be done before calling `./generateOrgKustomize.sh` or `./generateEnvKustomize.sh`
+
 
 ## Kustomize
 
@@ -259,7 +287,8 @@ The following components are included. Enable/disable these features as necessar
   - `cass-replicas`: Set Cassandra replicas
   - `enable-host-network`: Enable hostNetwork on platforms like GKE on-prem
   - `envgroups`: Include ingress settings for environment groups
-  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts
+  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts. Uses a single GSA for all components
+  - `multi-google-service-accounts`: Same as above, but uses one GSA per component
   - `http-proxy`: Use http forward proxy to communicate with the Apigee control plane
   - `logger`: Enable Apigee logger
   - `metrics`: Enable Apigee metrics
@@ -272,7 +301,8 @@ The following components are included. Enable/disable these features as necessar
   - `wildcard-gateway`: Creates a wildcard Gateway (Istio CR) and adds additionalGateways configuration to ApigeeRouteConfig
 
 * Environment Components
-  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts
+  - `google-service-accounts`: Create Kubernetes secrets for  Google Service Accounts. Uses a single GSA for all components
+  - `multi-google-service-accounts`: Same as above, but uses one GSA per component
   - `http-proxy`: Use http forward proxy to communicate with the Apigee control plane
   - `node-selector`: Use node selectors for env components
   - `runtime-http-proxy`: Use http forward proxy when API Proxies talk to backend/targets
