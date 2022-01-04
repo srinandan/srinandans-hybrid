@@ -7,23 +7,23 @@ namespace: apigee
 # override the hub and tag for various hybrid versions
 images:
 - name: ${HUB}/apigee-authn-authz
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-cassandra-backup-utility
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-connect-agent
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-envoy
   newTag: v1.19.1
 - name: ${HUB}/apigee-hybrid-cassandra
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-hybrid-cassandra-client
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-mart-server
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-prom-prometheus
   newTag: v2.25.0
 - name: ${HUB}/apigee-redis
-  newTag: ${TAG}
+  newTag: ${APIGEE_VERSION}
 - name: ${HUB}/apigee-stackdriver-logging-agent
   newTag: 1.8.9
 - name: ${HUB}/apigee-stackdriver-prometheus-sidecar

@@ -25,6 +25,7 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 * `overlays/<instance-id>/environments/<env-name>`: There is a folder for each Apigee environment. Within each folder, there can be further sub-folders to enable/disable features per Apigee Environment.
 * `overlays/<instance-id>/envgroups/<env-group-name>`: There is a folder for each Apigee environment group. ech env group contains a certificate and ApigeeRouteConfig.
 * `overlays/envoyfilters`: This folder contains envoyfilters to be applied to each Apigee instance
+* `bin`: folder containing bash scripts
 
 ```sh
 .
@@ -76,9 +77,8 @@ Creating an appropriate folder structure is key to using kustomize. The folder s
 │   │   └── ORG SCOPED COMPONENTS
 │   ├── envoyfilters
 │   │   └── <APIGEE ENVOY FILTERS>
-├── primary
-│   └── apigee-ca-certificate.yaml
-└── vars.sh
+└── primary
+    └── apigee-ca-certificate.yaml
 ```
 
 The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV>` are generated based on environment variables. The `generateOrgKustomize.sh` and `generateEnvKustomize.sh` scripts generate Kustomize from templates (in `./overlays/templates`).
@@ -87,7 +87,7 @@ The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV
 
 **NOTE:** The setup scripts require access to tools on specific versions. Please consult [here](#tools) before proceeding.
 
-Open the [vars.sh](./vars.sh) and [env-vars.sh](./env-vars.sh) to ensure the following variables are appropriately set:
+Open the [vars.sh](./bin/vars.sh) and [env-vars.sh](./bin/env-vars.sh) to ensure the following variables are appropriately set:
 
 * `ORG_NAME`: Apigee Organization name
 * `ENV_NAME`: Apigee Environment name (in env-vars.sh)
@@ -101,7 +101,7 @@ Open the [vars.sh](./vars.sh) and [env-vars.sh](./env-vars.sh) to ensure the fol
 
 ## Install Order
 
-Follow the instructions in [install.sh](./install.sh). If not using workload identity, download teh GSA private key. The file must be called `client_secret.json`. Place this file in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`
+Follow the instructions in [install.sh](./bin/install.sh). If not using workload identity, download the GSA private key. The file must be called `client_secret.json`. Place this file in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`
 
 ## Kustomize
 
@@ -133,16 +133,16 @@ This installation generates a self-signed certificate, signed by the [Apigee CA]
 
 These steps assume the Apigee Organization and other components are already installed.
 
-1. Open the [env-vars.sh](./env-vars.sh) file and add the new environment name. Generate the environment variables.
+1. Open the [env-vars.sh](./bin/env-vars.sh) file and add the new environment name. Generate the environment variables.
 
 ```sh
-source env-vars.sh
+source ./bin/env-vars.sh
 ```
 
 2. Generate the kustomize manifests for the environment
 
 ```sh
-./generateEnvKustomize.sh
+./bin/generateEnvKustomize.sh
 ```
 
 Edit the generated/default `kustomization.yaml` file if needed. Optionally, add the new environment in the `./overlays/${INSTANCE_ID}/environments/kustomizations.yaml` file.
@@ -165,7 +165,7 @@ kubectl apply -k ./overlays/instance1/environments
 
 In most cases, an Apigee Organization is identical across data centers or regions. In Apigee terms, an Apigee runtime deployment of an org is called an Apigee instance. Instances of an Org are typically identical.
 
-1. Change/set the environment variables `INSTANCE_ID`, `CLUSTER_NAME` and `CLUSTER_REGION`. Add env variables for `SEED_HOST` and `DATA_CENTER`. Make these changes in [vars.sh](./vars.sh)
+1. Change/set the environment variables `INSTANCE_ID`, `CLUSTER_NAME` and `CLUSTER_REGION`. Add env variables for `SEED_HOST` and `DATA_CENTER`. Make these changes in [vars.sh](./bin/vars.sh)
 
 Make a copy of all the files in the first instance to the new instance.
 
@@ -194,12 +194,12 @@ components:
 
 ```sh
 # ensure kubeconfing points to the first cluster
-./get-tls-keys.sh
+./bin/get-tls-keys.sh
 ```
 
 This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new cluster
 
-4. Follow the steps in [expand.sh](./expand.sh).
+4. Follow the steps in [expand.sh](./bin/expand.sh).
 
 
 ### Adding a new environment group
@@ -211,7 +211,7 @@ These steps assume an ApigeeOrganization and at least one environment group alre
 2. Generate the kustomize manifests for the environment
 
 ```sh
-./generateEnvGrpKustomize.sh
+./bin/generateEnvGrpKustomize.sh
 ```
 
 3. Add all the environment group names to the kustomization file

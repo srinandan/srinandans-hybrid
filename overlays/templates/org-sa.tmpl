@@ -24,7 +24,7 @@ spec:
       #appServiceAccountSecretName: apigee--mart-${ORG}-sa
       containers:
       - name: apigee-mart
-        image: ${HUB}/apigee-mart-server:${TAG}
+        image: ${HUB}/apigee-mart-server:${APIGEE_VERSION}
         env:
         - name: ${UC_ORG_NAME}_KMS_KEY
           valueFrom:

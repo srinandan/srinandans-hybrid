@@ -18,9 +18,12 @@ metadata:
   name: apigee-ingress
   annotations:
     kubernetes.io/ingress.allow-http: "false"
-    # if using a managed certificate, add name here
+    # use a self-signed isser from apgiee
+    cert-manager.io/cluster-issuer: apigee-ca
+    # if using a google managed certificate, add name here
 #   networking.gke.io/managed-certificates: "MANAGED-CERT-NAME"
-    kubernetes.io/ingress.global-static-ip-name: "ADD-IP-ADDRESS-NAME"
+    # GCP External LB global IP address
+    kubernetes.io/ingress.global-static-ip-name: "apigee-xlb"
     kubernetes.io/ingress.class: "gce"
 spec:
   defaultBackend:
@@ -30,7 +33,9 @@ spec:
         number: 443
 # set the secret name
 # tls:
-#   - secretName: ${ORG_NAME}-${ENV_GROUP}
+# - hosts:
+#   - api.${ORG_NAME}.example
+#   secretName: ${ORG_NAME}-${ENV_GROUP}
   rules:
   - http:
       paths:

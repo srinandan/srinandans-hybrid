@@ -20,7 +20,7 @@ source vars.sh
 # step 1. install cert manager
 helm repo add jetstack https://charts.jetstack.io && helm repo update
 
-helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.5.2 --set installCRDs=true --set nodeSelector."cloud\.google\.com/gke-nodepool"=apigee-runtime
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.5.2 --set installCRDs=true --set nodeSelector."cloud\.google\.com/gke-nodepool"=apigee-runtime && kubectl wait deployments/cert-manager -n cert-manager --for condition=available --timeout 60s
 
 # step 2: install asm
 curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > asmcli

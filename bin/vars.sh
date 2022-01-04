@@ -19,7 +19,7 @@ export PROJECT_ID=nandanks-151422
 export ASM_MINOR_VERSION=12
 
 export HUB=gcr.io/apigee-release/hybrid
-export TAG=1.6.3
+export APIGEE_VERSION=1.6.3
 
 export INSTANCE_ID=instance1
 
@@ -33,7 +33,7 @@ export ENV_GROUP=default
 #export GCS_BUCKET=my-bucket
 
 ####
-export VERSION=${${TAG}//./}
+export VERSION=${${APIGEE_VERSION}//./}
 export UC_ORG_NAME=$(echo "${ORG_NAME}" | awk '{print toupper($0)}')
 
 orglen=${#ORG_NAME}
