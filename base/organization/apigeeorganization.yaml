@@ -174,12 +174,6 @@ spec:
             requests:
               cpu: 500m
               memory: 512Mi
-#         env:
-#           - name: ORG_KMS_ENCRYPTION_KEY
-#             valueFrom:
-#               secretKeyRef:
-#                 name: org-encryption-keys
-#                 key: kmsEncryptionKey
         - name: apigee-authz
           image: gcr.io/apigee-release/hybrid/apigee-authn-authz:1.6.3
           imagePullPolicy: IfNotPresent

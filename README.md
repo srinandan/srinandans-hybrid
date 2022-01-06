@@ -4,10 +4,8 @@ This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](htt
 
 ## Prerequisites
 
-* A kubernetes cluster of supported version
+* A GKE cluster of supported version. See notes below if not using GKE.
 * Apigee control plane entities like Organization, Environment & Environment Group have been created
-* A Google Service Account is created with appropriate roles/permissions. This repo assumes a single GSA for all components (udca, sync etc.)
-* If not using workload identity, download the private key. Name the file `client_secret.json` and place the file in `./overlays/org-components/google-service-accounts/` and `./overlays/env-components/google-service-accounts/`
 
 ## Folder Structure
 
@@ -99,9 +97,17 @@ Open the [vars.sh](./bin/vars.sh) and [env-vars.sh](./bin/env-vars.sh) to ensure
 * `INSTANCE_ID`: Apigee Instance name
 * `ASM_MINOR_VERSION`: Anthos Service Mesh minor Version. For example, if installing ASM 1.12, set this to 12
 
+Other environment variables:
+* `GSA`: This is the Google service account name. This var is mandatory if using workload identity
+* `SEED_HOST`: This is needed when expanding an org to a second region
+* `DATA_CENTER`: This is needed when expanding an org to a second region
+* `HUB`: The image repository, defaults to GCR
+* `APIGEE_VERSION`: The Apigee hybrid version to install. Defaults to 1.6.3
+* `GCS_BUCKET`: If Cassandra backup is enabled, then the GCS bucket name. Non-GCS backup is not available
+
 ## Installation
 
-Follow the instructions in [install.sh](./bin/install.sh).
+Follow the instructions in [install.sh](./bin/install.sh). This installation assumes GKE. However, all the steps with the exception of ASM are identical when running outside GKE. Please see this [link](https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks) for instructions on how to change ASM install for other platforms.
 
 ### Managing access to the control plane
 
@@ -111,7 +117,7 @@ This installation supports two models to authenticate and authorize access to th
 
 #### Workload Identity
 
-This method is only supported on GKE. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
+This method is only supported on GKE. This is enabled through the `workload-identity` kustomize component. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
 
 #### Google Service Accounts
 
@@ -119,17 +125,25 @@ If you are using Google Service Accounts, there are two approaches:
 
 1. Using a single GSA for all components (default method). This is enabled with the `google-service-accounts` kustomize component. To use this method, please the GSA private key (the file must be called `client_secret.json`) in `./overlay/org-components/google-service-accounts/` and `./overlay/env-components/google-service-accounts/`. This must be done before calling `./generateOrgKustomize.sh`
 
-2. Use a different GSA for each type of compoennt. This is enabled with the `multi-google-service-accounts` kustomize component. To use this method, please the GSA private key (the file must be called `client_secret.json`in all cases) for: 
+2. Use a different GSA for each type of component. This is enabled with the `multi-google-service-accounts` kustomize component. To use this method, place the GSA private key (the file must be called `client_secret.json`in all cases) for:
   - mart in `./overlay/org-components/multi-google-service-accounts/mart`
   - watcher in `./overlay/org-components/multi-google-service-accounts/watcher`
   - apigee connect in `./overlay/org-components/multi-google-service-accounts/connect`
-  - telemtry/metrics in `./overlay/org-components/multi-google-service-accounts/telemetry`
+  - telemetry/metrics in `./overlay/org-components/multi-google-service-accounts/telemetry`
   - runtime in `./overlay/env-components/multi-google-service-accounts/runtime`
   - udca in `./overlay/env-components/multi-google-service-accounts/udca`
   - synchronizer in `./overlay/env-components/multi-google-service-accounts/synchronizer`
 
 This must be done before calling `./generateOrgKustomize.sh` or `./generateEnvKustomize.sh`
 
+### Private/Custom Image repo
+
+There are three helper scripts to download images from GCR (and Quay in the case of cert-manager):
+* [apigee-pull-push.sh](./bin/apigee-pull-push.sh): Pull Apigee hybrid images and push to another image repo
+* [asm-pull-push.sh](./bin/asm-pull-push.sh): Pull ASM images and push to another image repo
+* [cert-mgr-pull-push.sh](./bin/cert-mgr-pull-push.sh): Pull cert-manager images and push to another repo
+
+NOTE: All three scripts must be edited/changed to add target image repo details before use.
 
 ## Kustomize
 
@@ -153,9 +167,27 @@ components:
 
 The org kustomization file is generated via the script `generateOrgKustomize.sh`. The kustomize template for environments can be found [here](./overlays/templates/env-kustomization.tmpl). The env kustomization file is generated via the script `generateEnvKustomize.sh`.
 
-### Default Ingress Configuration
+### Ingress Configuration
 
 This installation generates a self-signed certificate, signed by the [Apigee CA](./clusters/apigee-apigee-ca-issuer-clusterissuer.yaml). The certificate template is [here](./overlays/templates/certificate.tmpl).
+
+If you wish to provide your own certificates, there are two ways:
+
+1. Modify the templates
+2. Modify the kustomize files
+
+Edit the `./overlays/templates/envgroup-kustomization.tmpl` template file or `./overlays/<instance-id>/envgroups/<env group>/kustomization.yaml`. Make the following edits in the file
+
+```
+
+resources:
+# do not include the certificate yaml
+# - certificate.yaml
+- apigeerouteconfig.yaml
+
+# add a secretGenerator with path to the tls key and crt
+```
+
 
 ### Add a new environment
 
