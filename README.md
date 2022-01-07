@@ -304,6 +304,36 @@ resources:
 kubectl apply -k overlays/${INSTANCE_ID}
 ```
 
+### Upgrading Apigee hybrid
+
+1. Change the image version in the controller kustomization file. This file is located in `./overlays/controller/kustomization.yaml`. Apply the manifest to kubernetes
+
+```sh
+kubectl apply -k overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
+```
+
+2. Change the image version in the Org kustomization file. This file is located in `./overlays/<instance-id>/kustomization.yaml`. Apply the manifest to kubernetes
+
+```sh
+kubectl apply -k overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
+```
+
+3. For each environment, change the image version in the env kustomization file. This file is located in `./overlays/<instance-id>/environments/<env>/kustomization.yaml`. Apply the manifest to kubernetes
+
+```sh
+kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
+```
+
+NOTE: Please consult cert-manager docs for upgrading it.
+
+### ASM Upgrade
+
+Please consult the ASM docs for how to upgrade ASM. After upgrading ASM, open the Envoy Filter kustomization file. This file is found `./overlays/envoyfilters/kustomization.yaml`. Edit the file to set the appropriate ASM version. Apply the kubernetes manifest.
+
+```sh
+kubectl apply -k ./overlays/envoyfilters
+```
+
 ### Other considerations
 
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
