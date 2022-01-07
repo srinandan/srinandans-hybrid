@@ -340,6 +340,7 @@ The following components are included. Enable/disable these features as necessar
   - `runtime-http-proxy`: Use http forward proxy when API Proxies talk to backend/targets
   - `runtime-replicas`: Set runtime replicas
   - `secrets`: Generate Kubernetes secrets for env components
+  - `pullsecret`: Set a Image Pull Secret for Env components
   - `workload-identity`: Enable workload identity for env components (only for GKE)
 
 ## Versions
