@@ -334,6 +334,28 @@ Please consult the ASM docs for how to upgrade ASM. After upgrading ASM, open th
 kubectl apply -k ./overlays/envoyfilters
 ```
 
+### Change default namespace
+
+By default, Apigee hybrid components are installed in the following namespaces:
+
+1. Cert Manager: `cert-manager` namespace. Use helm to change the default namespace
+2. Anthos Service Mesh: `istio-system` and `asm-system`. It is recommended that these are not changed.
+3. Apigee: `apigee-system` and `apigee`. Changing the `apigee-system` namespace is not support. The following insructions show how to change the `apigee` namespace.
+
+Steps to change the `apigee` namespace to an alternative:
+
+1. Change the cluster definition to use the new namespace
+  a. [apigee-cassandra-backup-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-crb.yaml#L26)
+  b. [apigee-init-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-init-crb.yaml#L27)
+  c. [apigee-cassandra-backup-cr.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-cr.yaml#L19)
+
+
+2. Edit the file [namespace.yaml](./overlays/org-components/namespace.yaml) and change the namespace
+
+3. Edit the instance kustomization template [instance-kustomization.tmpl](https://github.com/srinandan/srinandans-hybrid/blob/main/overlays/templates/instance-kustomization.tmpl#L5) and change the namespace
+
+4. Proceed with installation [install.sh](./bin/install.sh)
+
 ### Other considerations
 
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.
