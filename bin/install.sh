@@ -69,3 +69,5 @@ kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 
 # step 11: Enable Apigee envoyfilters for ASM
 kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
+
+rm ${APIGEE_HOME}/bin/asmcli
