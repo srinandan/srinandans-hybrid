@@ -16,7 +16,7 @@
 set -e
 
 # initalize variables
-source vars.sh
+source ${APIGEE_HOME}/bin/vars.sh
 
 # step 1. install cert manager
 helm repo add jetstack https://charts.jetstack.io && helm repo update
@@ -24,11 +24,11 @@ helm repo add jetstack https://charts.jetstack.io && helm repo update
 helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.5.2 --set installCRDs=true --set nodeSelector."cloud\.google\.com/gke-nodepool"=apigee-runtime && kubectl wait deployments/cert-manager -n cert-manager --for condition=available --timeout 60s
 
 # step 2: install asm
-curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > asmcli
+curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > ${APIGEE_HOME}/bin/asmcli
 
-chmod +x asmcli
+chmod +x ${APIGEE_HOME}/bin/asmcli
 
-./asmcli install \
+. ${APIGEE_HOME}/bin/asmcli install \
   --project_id ${PROJECT_ID} \
   --cluster_name ${CLUSTER_NAME} \
   --cluster_location ${CLUSTER_REGION} \
@@ -51,7 +51,7 @@ kubectl apply -f ${APIGEE_HOME}/cluster
 kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
 # step 7: Generate kustomize for expnding Cassandra
-./${APIGEE_HOME}/bin/generateMultiRegionKustomize.sh
+. ${APIGEE_HOME}/bin/generateMultiRegionKustomize.sh
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
 kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
@@ -61,3 +61,5 @@ kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 
 # step 10: Enable Apigee envoyfilters for ASM
 kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
+
+rm ${APIGEE_HOME}/bin/asmcli
