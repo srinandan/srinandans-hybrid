@@ -17,4 +17,4 @@ kind: Kustomization
 
 resources:
 # add your environment names here
-- prod1
+# - env-name1
