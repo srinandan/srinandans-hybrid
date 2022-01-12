@@ -13,19 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir -p ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}
-cp -r ./overlays/env-components/* ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/
+mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
+cp -r ${APIGEE_HOME}/overlays/env-components/* ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/
 
 # run one per environment name
-envsubst < ./overlays/templates/env-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/kustomization.yaml
-envsubst < ./overlays/templates/env.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/env.yaml
-envsubst < ./overlays/templates/env-gsa.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/env.yaml
-envsubst < ./overlays/templates/env-gsa.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/env.yaml
-envsubst < ./overlays/templates/env-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/kustomization.yaml
-envsubst < ./overlays/templates/env-multi-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/kustomization.yaml
-envsubst < ./overlays/templates/env-secrets.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/secrets/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/env.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/env.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/env.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-gsa-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/google-service-accounts/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-multi-gsa-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/multi-google-service-accounts/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/env-secrets.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/secrets/kustomization.yaml
 
 # disable if not using workload identity
-envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/environments/${ENV_NAME}/workload-identity/annotate.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/annotate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/workload-identity/annotate.yaml
 
 #kustomize build overlays/instance1/environments/prod1 -o prod1.yaml

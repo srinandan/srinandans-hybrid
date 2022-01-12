@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# path to the folder containing the scripts
+export APIGEE_HOME=$(pwd)
+
 export CLUSTER_REGION=us-west1
 export CLUSTER_NAME=srinandans-hybrid
 export PROJECT_ID=nandanks-151422
@@ -48,7 +51,7 @@ fi
 
 export ORG=$ORGSHORTNAME-$ORGHASH
 
-source env-vars.sh
+source ${APIGEE_HOME}/bin/env-vars.sh
 
 # for multi-region
 # export SEED_HOST=10.0.0.1

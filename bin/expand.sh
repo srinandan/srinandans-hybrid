@@ -42,22 +42,22 @@ chmod +x asmcli
 kubectl create secret tls apigee-ca -n cert-manager --cert=tls.crt --key=tls.key && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
 
 # step 4: install crds
-kubectl create -f cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
+kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
 
 # step 5: create cluster resources
-kubectl apply -f cluster
+kubectl apply -f ${APIGEE_HOME}/cluster
 
 # step 6: install apigee controller. Controller kustomize scripts were already created.
-kubectl apply -k overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
+kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
 # step 7: Generate kustomize for expnding Cassandra
-./generateMultiRegionKustomize.sh
+./${APIGEE_HOME}/bin/generateMultiRegionKustomize.sh
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
-kubectl apply -k overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
+kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
 # step 9: install the apigee environment
-kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
+kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 
 # step 10: Enable Apigee envoyfilters for ASM
-kubectl apply -k overlays/envoyfilters
+kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters

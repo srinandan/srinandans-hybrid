@@ -14,11 +14,11 @@
 # limitations under the License.
 
 # run one per env group
-mkdir -p ./overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}
-cp ./overlays/templates/envgroup-kustomization.yaml ./overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/kustomization.yaml
-envsubst < ./overlays/templates/envgroups-kustomization.tmpl > ./overlays/${INSTANCE_ID}/envgroups/kustomization.yaml
-envsubst < ./overlays/templates/certificate.tmpl > ./overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/certificate.yaml
-envsubst < ./overlays/templates/apigeerouteconfig.tmpl > ./overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/apigeerouteconfig.yaml
+mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}
+cp ${APIGEE_HOME}/overlays/templates/envgroup-kustomization.yaml ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/envgroups-kustomization.tmpl > ${APIEGE_HOME}/overlays/${INSTANCE_ID}/envgroups/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/certificate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/certificate.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/apigeerouteconfig.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/apigeerouteconfig.yaml
 
 #this is only necessary if the wildcard-gateway component is enabled
-envsubst < ./overlays/templates/wildcard-gateway.tmpl > ./overlays/${INSTANCE_ID}/wildcard-gateway/wildcard-gateway.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/wildcard-gateway.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/wildcard-gateway/wildcard-gateway.yaml

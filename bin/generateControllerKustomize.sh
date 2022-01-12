@@ -15,7 +15,7 @@
 
 #source vars.sh
 
-envsubst < ./overlays/templates/controller-kustomization.tmpl > ./overlays/controller/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/controller-kustomization.tmpl > ${APIGEE_HOME}/overlays/controller/kustomization.yaml
 
 #kustomize build overlays/controller -o controller.yaml
 

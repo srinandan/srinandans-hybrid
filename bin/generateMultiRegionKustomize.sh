@@ -15,4 +15,5 @@
 
 #source vars.sh
 
+mkdir -p ./overlays/${INSTANCE_ID}/multi-region
 envsubst < ./overlays/templates/multi-region-kustomization.tmpl > ./overlays/${INSTANCE_ID}/multi-region/kustomization.yaml

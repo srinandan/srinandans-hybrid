@@ -39,31 +39,31 @@ chmod +x asmcli
   --ca mesh_ca
 
 # step 3: install CA cert in primary region only
-kubectl apply -f primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
+kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
 
 # step 4: install crds
-kubectl create -f cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
+kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
 
 # step 5: create cluster resources
 kubectl apply -f cluster
 
 # step 6: install apigee controller
-./generateControllerKustomize.sh
-kubectl apply -k overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
+./${APIEE_HOME}/bin/generateControllerKustomize.sh
+kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
 # step 7: generate kustomize manifests from templates
-./generateOrgKustomize.sh
+./${APIGEE_HOME}/bin/generateOrgKustomize.sh
 # inspect the kustomization.yaml file in ./overlays/${INSTANCE_ID}. Enable or
 # disable features as necessary
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
-kubectl apply -k overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
+kubectl apply -k ${APIGE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
 # step 9: generate env kustomize manifests from templates
-./generateEnvKustomize.sh
+./${APIGEE_HOME}/bin/generateEnvKustomize.sh
 
 # step 10: install the apigee environment
-kubectl apply -k overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
+kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 
 # step 11: Enable Apigee envoyfilters for ASM
-kubectl apply -k overlays/envoyfilters
+kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
