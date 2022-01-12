@@ -36,7 +36,7 @@ export ENV_GROUP=default
 #export GCS_BUCKET=my-bucket
 
 ####
-export VERSION=${${APIGEE_VERSION}//./}
+export VERSION=${APIGEE_VERSION//./}
 export UC_ORG_NAME=$(echo "${ORG_NAME}" | awk '{print toupper($0)}')
 
 orglen=${#ORG_NAME}
