@@ -59,7 +59,7 @@ kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/
 # disable features as necessary
 
 # step 8: install apigee runtime instance (datastore, telemetry, redis and org)
-kubectl apply -k ${APIGE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
+kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
 # step 9: generate env kustomize manifests from templates
 . ${APIGEE_HOME}/bin/generateEnvKustomize.sh
