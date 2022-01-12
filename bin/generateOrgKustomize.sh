@@ -15,31 +15,31 @@
 
 #source vars.sh
 
-mkdir -p ./overlays/${INSTANCE_ID}
-cp -r ./overlays/org-components/* ./overlays/${INSTANCE_ID}/
+mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}
+cp -r ${APIGEE_HOME}/overlays/org-components/* ${APIGEE_HOME}/overlays/${INSTANCE_ID}/
 
-envsubst < ./overlays/templates/org.tmpl > ./overlays/${INSTANCE_ID}/org.yaml
-envsubst < ./overlays/templates/org-sa.tmpl > ./overlays/${INSTANCE_ID}/org-sa.yaml
-envsubst < ./overlays/templates/org-secrets.tmpl > ./overlays/${INSTANCE_ID}/secrets/kustomization.yaml
-envsubst < ./overlays/templates/org-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/kustomization.yaml
-envsubst < ./overlays/templates/org-multi-gsa-kustomization.tmpl > ./overlays/${INSTANCE_ID}/multi-google-service-accounts/kustomization.yaml
-envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
-envsubst < ./overlays/templates/org-gsa.tmpl > ./overlays/${INSTANCE_ID}/multi-google-service-accounts/org.yaml
-envsubst < ./overlays/templates/metrics.tmpl > ./overlays/${INSTANCE_ID}/metrics/metrics.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/org.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-sa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/org-sa.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-secrets.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/secrets/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-gsa-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/google-service-accounts/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-multi-gsa-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/multi-google-service-accounts/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/org-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/multi-google-service-accounts/org.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/metrics.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/metrics/metrics.yaml
 
 #if Cassandra backup is enabled, uncomment this
-#envsubst < ./overlays/templates/apigee-cassandra-backup-cronjob.tmpl > ./overlays/${INSTANCE_ID}/cass-backup/apigee-cassandra-backup-cronjob.yaml
-#envsubst < ./overlays/templates/cass-backup-kustomization.tmpl > ./overlays/${INSTANCE_ID}/cass-backup/kustomization.yaml
+#envsubst < ${APIGEE_HOME}/overlays/templates/apigee-cassandra-backup-cronjob.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/cass-backup/apigee-cassandra-backup-cronjob.yaml
+#envsubst < ${APIGEE_HOME}/overlays/templates/cass-backup-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/cass-backup/kustomization.yaml
 
 # disable if not using workload identity
-envsubst < ./overlays/templates/annotate.tmpl > ./overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/annotate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 
 # run one per env group
-./generateEnvGrpKustomize.sh
+. ${APIGEE_HOME}/bin/generateEnvGrpKustomize.sh
 
-envsubst < ./overlays/templates/instance-kustomization.tmpl > ./overlays/${INSTANCE_ID}/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/instance-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/kustomization.yaml
 
 # generate configuration for envoy filters
-envsubst < ./overlays/templates/envoyfilters-kustomization.tmpl > ./overlays/envoyfilters/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/envoyfilters-kustomization.tmpl > ${APIGEE_HOME}/overlays/envoyfilters/kustomization.yaml
 
-#kustomize build overlays/${INSTANCE_ID} -o ${INSTANCE_ID}.yaml
+#kustomize build ${APIGEE_HOME}/overlays/${INSTANCE_ID} -o ${INSTANCE_ID}.yaml
