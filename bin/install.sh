@@ -30,7 +30,7 @@ curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > ${APIGEE_HOM
 
 chmod +x ${APIGEE_HOME}/bin/asmcli
 
-./${APIGEE_HOME}/bin/asmcli install \
+. ${APIGEE_HOME}/bin/asmcli install \
   --project_id ${PROJECT_ID} \
   --cluster_name ${CLUSTER_NAME} \
   --cluster_location ${CLUSTER_REGION} \
@@ -50,11 +50,11 @@ kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironm
 kubectl apply -f ${APIGEE_HOME}/cluster
 
 # step 6: install apigee controller
-./${APIEE_HOME}/bin/generateControllerKustomize.sh
+. ${APIGEE_HOME}/bin/generateControllerKustomize.sh
 kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
 # step 7: generate kustomize manifests from templates
-./${APIGEE_HOME}/bin/generateOrgKustomize.sh
+. ${APIGEE_HOME}/bin/generateOrgKustomize.sh
 # inspect the kustomization.yaml file in ./overlays/${INSTANCE_ID}. Enable or
 # disable features as necessary
 
@@ -62,7 +62,7 @@ kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/
 kubectl apply -k ${APIGE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
 # step 9: generate env kustomize manifests from templates
-./${APIGEE_HOME}/bin/generateEnvKustomize.sh
+. ${APIGEE_HOME}/bin/generateEnvKustomize.sh
 
 # step 10: install the apigee environment
 kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s

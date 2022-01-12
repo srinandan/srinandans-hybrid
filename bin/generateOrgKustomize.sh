@@ -35,7 +35,7 @@ envsubst < ${APIGEE_HOME}/overlays/templates/metrics.tmpl > ${APIGEE_HOME}/overl
 envsubst < ${APIGEE_HOME}/overlays/templates/annotate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/workload-identity/annotate.yaml
 
 # run one per env group
-./${APIGEE_HOME}/bin/generateEnvGrpKustomize.sh
+. ${APIGEE_HOME}/bin/generateEnvGrpKustomize.sh
 
 envsubst < ${APIGEE_HOME}/overlays/templates/instance-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/kustomization.yaml
 
