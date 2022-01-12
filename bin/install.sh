@@ -16,7 +16,7 @@
 set -e
 
 # initalize variables
-source vars.sh
+source ${APIGEE_HOME}/bin/vars.sh
 
 # step 1. install cert manager
 helm repo add jetstack https://charts.jetstack.io && helm repo update
@@ -26,11 +26,11 @@ helm install cert-manager jetstack/cert-manager --namespace cert-manager --creat
 
 # step 2: install asm
 # These instructions are for GKE. If installing on another platform, see here: https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks
-curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > asmcli
+curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > ${APIGEE_HOME}/bin/asmcli
 
-chmod +x asmcli
+chmod +x ${APIGEE_HOME}/bin/asmcli
 
-./asmcli install \
+./${APIGEE_HOME}/bin/asmcli install \
   --project_id ${PROJECT_ID} \
   --cluster_name ${CLUSTER_NAME} \
   --cluster_location ${CLUSTER_REGION} \
@@ -47,7 +47,7 @@ kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wa
 kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
 
 # step 5: create cluster resources
-kubectl apply -f cluster
+kubectl apply -f ${APIGEE_HOME}/cluster
 
 # step 6: install apigee controller
 ./${APIEE_HOME}/bin/generateControllerKustomize.sh
