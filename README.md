@@ -119,6 +119,14 @@ This installation supports two models to authenticate and authorize access to th
 
 This method is only supported on GKE. This is enabled through the `workload-identity` kustomize component. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
 
+Here is a helper command to associate KSA with GSA
+
+```sh
+kubectl get sa -n apigee | grep apigee | awk '{print $1}' | while read line ; do gcloud iam service-accounts add-iam-policy-binding --role roles/iam.workloadIdentityUser --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$line]" $GSA@$PROJECT_ID.iam.gserviceaccount.com --project=${PROJECT_ID} ; done
+```
+
+NOTE: This command will only work **after** the installation process is complete. It requires the KSAs to already exist.
+
 #### Google Service Accounts
 
 If you are using Google Service Accounts, there are two approaches:
