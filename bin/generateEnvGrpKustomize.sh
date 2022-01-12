@@ -16,7 +16,7 @@
 # run one per env group
 mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}
 cp ${APIGEE_HOME}/overlays/templates/envgroup-kustomization.yaml ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/kustomization.yaml
-envsubst < ${APIGEE_HOME}/overlays/templates/envgroups-kustomization.tmpl > ${APIEGE_HOME}/overlays/${INSTANCE_ID}/envgroups/kustomization.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/envgroups-kustomization.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/kustomization.yaml
 envsubst < ${APIGEE_HOME}/overlays/templates/certificate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/certificate.yaml
 envsubst < ${APIGEE_HOME}/overlays/templates/apigeerouteconfig.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/apigeerouteconfig.yaml
 

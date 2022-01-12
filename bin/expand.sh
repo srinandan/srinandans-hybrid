@@ -39,7 +39,7 @@ chmod +x asmcli
 # step 3: Create Apigee CA
 #
 # NOTE: Before running this command, obtian the keys from get-tls-keys.sh
-kubectl create secret tls apigee-ca -n cert-manager --cert=tls.crt --key=tls.key && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
+kubectl create secret tls apigee-ca -n cert-manager --cert=tls.crt --key=tls.key
 
 # step 4: install crds
 kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s

@@ -39,6 +39,8 @@ chmod +x asmcli
   --ca mesh_ca
 
 # step 3: install CA cert in primary region only
+kubectl apply -f ${APIGEE_HOME}/cluster/apigee-selfsigned-clusterissuer.yaml && kubectl wait clusterissuer/selfsigned --for condition=ready --timeout=60s
+
 kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
 
 # step 4: install crds
