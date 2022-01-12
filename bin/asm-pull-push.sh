@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ASM_VERSION=1.12.0-asm.4
+source ${APIGEE_HOME}/bin/vars.sh
 
 docker pull gcr.io/gke-release/asm/pilot:${ASM_VERSION}
 docker pull gcr.io/gke-release/asm/proxyv2:${ASM_VERSION}
