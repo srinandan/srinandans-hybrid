@@ -193,7 +193,13 @@ resources:
 # - certificate.yaml
 - apigeerouteconfig.yaml
 
-# add a secretGenerator with path to the tls key and crt
+# add a secretGenerator with path to the tls key and crt, replace the env vars.
+secretGenerator:
+- name: ${ORG_NAME}-${ENV_GROUP}
+  type: "kubernetes.io/tls"
+  files:
+  - tls.key
+  - tls.crt
 ```
 
 
@@ -353,9 +359,9 @@ By default, Apigee hybrid components are installed in the following namespaces:
 Steps to change the `apigee` namespace to an alternative:
 
 1. Change the cluster definition to use the new namespace
-  a. [apigee-cassandra-backup-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-crb.yaml#L26)
-  b. [apigee-init-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-init-crb.yaml#L27)
-  c. [apigee-cassandra-backup-cr.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-cr.yaml#L19)
+  * [apigee-cassandra-backup-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-crb.yaml#L26)
+  * [apigee-init-crb.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-init-crb.yaml#L27)
+  * [apigee-cassandra-backup-cr.yaml](https://github.com/srinandan/srinandans-hybrid/blob/main/cluster/apigee-cassandra-backup-cr.yaml#L19)
 
 
 2. Edit the file [namespace.yaml](./overlays/org-components/namespace.yaml) and change the namespace
