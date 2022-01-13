@@ -3,10 +3,11 @@
 # Exit immediately if sequence of one or more commands returns a non-zero status.
 set -e
 
-PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
+#PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)
 
 # shellcheck disable=SC1090
-source "${PWD}/common.sh"
+#source "${PWD}/common.sh"
+source common.sh
 
 TAG=${APIGEE_VERSION}
 REPO=$1

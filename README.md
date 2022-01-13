@@ -210,7 +210,7 @@ These steps assume the Apigee Organization and other components are already inst
 1. Open the [env-vars.sh](./bin/env-vars.sh) file and add the new environment name. Generate the environment variables.
 
 ```sh
-source ./bin/env-vars.sh
+source ${APIGEE_HOME}/bin/env-vars.sh
 ```
 
 2. Generate the kustomize manifests for the environment
@@ -268,7 +268,7 @@ components:
 
 ```sh
 # ensure kubeconfing points to the first cluster
-./bin/get-tls-keys.sh
+. ${APIGEE_HOME}/bin/get-tls-keys.sh
 ```
 
 This will generate `tls.key` and `tls.crt`. Change the kubeconfig to the new cluster
@@ -285,7 +285,7 @@ These steps assume an ApigeeOrganization and at least one environment group alre
 2. Generate the kustomize manifests for the environment
 
 ```sh
-./bin/generateEnvGrpKustomize.sh
+. ${APIGEE_HOME}/bin/generateEnvGrpKustomize.sh
 ```
 
 3. Add all the environment group names to the kustomization file
@@ -425,6 +425,10 @@ The following components are included. Enable/disable these features as necessar
 * bash 5.1.8
 * envsubst 0.21
 * helm v3.7.2
+
+## Common Errors
+
+* `error: unrecognized condition: "jsonpath={.status.state}=running"`: Please check your kubectl version. 1.23 or high is necessary.
 
 ## History
 
