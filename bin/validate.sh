@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $OSTYPE == "linux-gnu"* ]; then
+  echo "WARNING: this script has tested only on bash on Linux. You may encounter problems on other platforms"
+fi
+
+
 gcloud version 2>&1 >/dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
