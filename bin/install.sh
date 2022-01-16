@@ -18,6 +18,9 @@ set -e
 # initalize variables
 source ./bin/vars.sh
 
+# validate prerequisites
+. ${APIGEE_HOME}/bin/validate.sh
+
 # step 1. install cert manager
 helm repo add jetstack https://charts.jetstack.io && helm repo update
 

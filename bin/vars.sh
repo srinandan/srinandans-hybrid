@@ -18,7 +18,7 @@ export APIGEE_HOME=$(pwd)
 
 export CLUSTER_REGION=us-west1
 export CLUSTER_NAME=srinandans-hybrid
-export PROJECT_ID=nandanks-151422
+export PROJECT_ID=$(gcloud config get-value project)
 export ASM_MINOR_VERSION=12
 
 export HUB=gcr.io/apigee-release/hybrid
@@ -29,7 +29,7 @@ export INSTANCE_ID=instance1
 # Google service account name
 export GSA=apigee
 
-export ORG_NAME=srinandans-hybrid
+export ORG_NAME=$PROJECT_ID
 export ENV_GROUP=default
 
 #if cassandra backup is enabled, uncomment this
