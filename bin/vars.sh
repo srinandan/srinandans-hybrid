@@ -13,24 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# path to the folder containing the scripts
-export APIGEE_HOME=$(pwd)
-
-export CLUSTER_REGION=us-west1
-export CLUSTER_NAME=srinandans-hybrid
-export PROJECT_ID=$(gcloud config get-value project)
+#export CLUSTER_REGION=us-west1
+#export CLUSTER_NAME=srinandans-hybrid
+#export PROJECT_ID=$(gcloud config get-value project)
 export ASM_MINOR_VERSION=12
 
 export HUB=gcr.io/apigee-release/hybrid
-export APIGEE_VERSION=1.6.3
+#export APIGEE_VERSION=1.6.3
 
-export INSTANCE_ID=instance1
+#export INSTANCE_ID=instance1
 
 # Google service account name
 export GSA=apigee
 
-export ORG_NAME=$PROJECT_ID
-export ENV_GROUP=default
+#export ORG_NAME=$PROJECT_ID
+#export ENV_GROUP=default
 
 #if cassandra backup is enabled, uncomment this
 #export GCS_BUCKET=my-bucket

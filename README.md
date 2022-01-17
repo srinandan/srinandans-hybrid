@@ -83,21 +83,8 @@ The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV
 
 ## Setup Variables
 
-**NOTE:** The setup scripts require access to tools on specific versions. Please consult [here](#tools) before proceeding.
-
-Open the [vars.sh](./bin/vars.sh) and [env-vars.sh](./bin/env-vars.sh) to ensure the following variables are appropriately set:
-
-* `ORG_NAME`: Apigee Organization name
-* `ENV_NAME`: Apigee Environment name (in env-vars.sh)
-* `ENV_GROUP`: Apigee Environment Group name
-* `CLUSTER_REGION`: GCP Region for the Kubernetes cluster (or closest GCP region if running outside GCP)
-* `CLUSTER_NAME`: Kubernetes cluster name
-* `PROJECT_ID`: GCP Project Id
-* `APIGEE_VERSION`: Apigee hybrid version
-* `INSTANCE_ID`: Apigee Instance name
+**NOTE:** The setup scripts require access to tools on specific versions. Please consult [here](#tools) before proceeding. Open the [vars.sh](./bin/vars.sh) to set the following variables:
 * `ASM_MINOR_VERSION`: Anthos Service Mesh minor Version. For example, if installing ASM 1.12, set this to 12
-
-Other environment variables:
 * `GSA`: This is the Google service account name. This var is mandatory if using workload identity
 * `SEED_HOST`: This is needed when expanding an org to a second region
 * `DATA_CENTER`: This is needed when expanding an org to a second region
@@ -152,6 +139,12 @@ There are three helper scripts to download images from GCR (and Quay in the case
 * [cert-mgr-pull-push.sh](./bin/cert-mgr-pull-push.sh): Pull cert-manager images and push to another repo
 
 NOTE: All three scripts must be edited/changed to add target image repo details before use.
+
+### Running the script
+
+```sh
+./bin/install.sh -o my-org -e my-env -eg my-env-group -i my-instance --cluster-name my-cluster-name --cluster-region my-cluster-region 
+```
 
 ## Kustomize
 

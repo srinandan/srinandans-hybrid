@@ -1,5 +1,102 @@
 #!/bin/bash
 
+#**
+# @brief    Displays usage details.
+#
+usage() {
+    echo -e "$*\n usage: $(basename "$0")" \
+        "-o <org> -e <env> -eg <envgroup> -i <instance>\n" \
+        "example: $(basename "$0") -o my-org -e test -eg default -i instance1 \n" \
+        "Parameters:\n" \
+        "-o --org       : Apigee organization name (mandatory parameter)\n" \
+        "-e --env       : Apigee environment name (mandatory parameter)\n" \
+        "-eg --envgroup : Apigee component name (optional parameter; defaults to default)\n" \
+        "-i --instance  : Apigee instance name (optional parameter; defaults to instance1)\n" \
+        "-v --apigeever : Apigee hybrid version; defaults to 1.6.3"
+    exit 1
+}
+
+### Start of mainline code ###
+
+PARAMETERS=()
+while [[ $# -gt 0 ]]
+do
+    param="$1"
+
+    case $param in
+        -o|--org)
+        export ORG_NAME="$2"
+        export PROJECT_ID="$2"
+        shift
+        shift
+        ;;
+        -e|--env)
+        export ENV_NAME="$2"
+        shift
+        shift
+        ;;
+        -eg|--envgroup)
+        export ENV_GROUP="$2"
+        shift
+        shift
+        ;;
+        -v|--apigeever)
+        export APIGEE_VERSION="$2"
+        shift
+        shift
+        ;;
+        -i|--instance)
+        export INSTANCE_ID="$2"
+        shift
+        shift
+        ;;
+        --cluster-name)
+        export CLUSTER_NAME="$2"
+        shift
+        shift
+        ;;
+        --cluster-region)
+        export CLUSTER_REGION="$2"
+        shift
+        shift
+        ;;
+        *)
+        PARAMETERS+=("$1")
+        shift
+        ;;
+    esac
+done
+
+set -- "${PARAMETERS[@]}"
+
+if [[ -z $ORG_NAME ]]; then
+    usage "org name is a mandatory parameter"
+fi
+
+if [[ -z $ENV_NAME ]]; then
+    usage "env name is a mandatory parameter"
+fi
+
+if [[ -z $ENV_GROUP ]]; then
+    usage "env group is a mandatory parameter"
+fi
+
+if [[ -z $INSTANCE_ID ]]; then
+    usage "instance id is a mandatory parameter"
+fi
+
+if [[ -z $CLUSTER_NAME ]]; then
+    usage "cluster name is a mandatory parameter"
+fi
+
+if [[ -z $CLUSTER_REGION ]]; then
+    usage "cluster region is a mandatory parameter"
+fi
+
+if [[ -z $APIGEE_VERSION ]]; then
+    export APIGEE_VERSION=1.6.3
+fi
+
 if [ $OSTYPE == "linux-gnu"* ]; then
   echo "WARNING: this script has tested only on bash on Linux. You may encounter problems on other platforms"
 fi
@@ -11,6 +108,8 @@ if [ $RESULT -ne 0 ]; then
   echo "this script depends on gcloud. Please install gcloud and re-run the command"
   exit 1
 fi
+
+gcloud config set project ${PROJECT_ID}
 
 openssl version 2>&1 >/dev/null
 RESULT=$?
@@ -47,5 +146,5 @@ if [ $RESULT -ne 0 ]; then
   exit 1
 fi
 
-echo "all pre-reqs passed!"
+echo "All pre-reqs were met, proceeding with install!"
 

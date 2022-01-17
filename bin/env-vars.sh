@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-export ENV_NAME=prod1
+#export ENV_NAME=prod1
 export UC_ENV_NAME=$(echo "${ENV_NAME}" | awk '{print toupper($0)}')
 
 orglen=${#ORG_NAME}
