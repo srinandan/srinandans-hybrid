@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set -e
 
 #**
 # @brief    Displays usage details.
@@ -155,7 +156,7 @@ if [ "$KUBECTL_VER" -lt "$MIN_KUBECTL_VER" ]; then
   exit 1
 fi
 
-gcloud alpha apigee environments describe $ENV_NAME --organization=$ORG_NAME | wc -l 2>&1 >/dev/null
+gcloud alpha apigee environments describe $ENV_NAME --organization=$ORG_NAME 2>&1 >/dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "this script depends on control plane entities like org, env and envgroup to exist. Please create them and re-run the command"
