@@ -363,6 +363,23 @@ Steps to change the `apigee` namespace to an alternative:
 
 4. Proceed with installation [install.sh](./bin/install.sh)
 
+### Enabling optional EnvoyFilters
+
+Enable from the list of optional EnvoyFilters:
+
+* XFF Number of Hops: Envoy needs to be configured to determine the trusted client address before appending anything to XFF header. These rules are explained [here](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_conn_man/headers#x-forwarded-for). This filter assumes Envoy is a Edge proxy.
+* Enable Access Logs: Enable access logging for Apigee Ingress.
+* Edge Proxy Settings: Configure Envoy as an edge proxy as recommended [here](https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/edge).
+
+To enable/alter this configuration, uncomment the [envoyfilters-kustomization.tmpl](./overlays/templates/envoyfilters-kustomization.tmpl) file
+
+```yaml
+resources:
+- ../../base/envoyfilters
+#- xff.yaml
+#- accesslog.yaml
+```
+
 ### Other considerations
 
 * Instead of using the `secretGenerator` secrets could be managed externally. Some of the techniques are explored in the legacy branch in this repo.

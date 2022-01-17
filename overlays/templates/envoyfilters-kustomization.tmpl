@@ -47,9 +47,18 @@ patches:
     kind: EnvoyFilter
     name: apigee-ingress-accesslog
     version: v1alpha3
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-edge-proxy-1-${ASM_MINOR_VERSION}
+  target:
+    kind: EnvoyFilter
+    name: apigee-edge-proxy
+    version: v1alpha3
 
 
 resources:
 - ../../base/envoyfilters
 #- xff.yaml
 #- accesslog.yaml
+#- edge-proxy.yaml
