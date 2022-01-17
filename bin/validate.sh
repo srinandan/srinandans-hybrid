@@ -19,14 +19,16 @@
 #
 usage() {
     echo -e "$*\n usage: $(basename "$0")" \
-        "-o <org> -e <env> -eg <envgroup> -i <instance>\n" \
-        "example: $(basename "$0") -o my-org -e test -eg default -i instance1 \n" \
+        "-o <org> -e <env> -eg <envgroup> -i <instance> --cluster-name <name> --cluster-region <region>\n" \
+        "example: $(basename "$0") -o my-org -e test -eg default -i instance1 --cluster-name k8s1 --cluster-region <region>\n" \
         "Parameters:\n" \
-        "-o --org       : Apigee organization name (mandatory parameter)\n" \
-        "-e --env       : Apigee environment name (mandatory parameter)\n" \
-        "-eg --envgroup : Apigee component name (optional parameter; defaults to default)\n" \
-        "-i --instance  : Apigee instance name (optional parameter; defaults to instance1)\n" \
-        "-v --apigeever : Apigee hybrid version; defaults to 1.6.3"
+        "-o --org         : Apigee organization name (mandatory parameter)\n" \
+        "-e --env         : Apigee environment name (mandatory parameter)\n" \
+        "-eg --envgroup   : Apigee component name (optional parameter; defaults to default)\n" \
+        "-i --instance    : Apigee instance name (optional parameter; defaults to instance1)\n" \
+        "-v --apigeever   : Apigee hybrid version; defaults to 1.6.3\n" \
+        "--cluster-name   : Kubernetes cluster name\n" \
+        "--cluster-region : Kubernetes cluster region"
     exit 1
 }
 
@@ -153,12 +155,22 @@ if [ "$KUBECTL_VER" -lt "$MIN_KUBECTL_VER" ]; then
   exit 1
 fi
 
-gcloud alpha apigee environments describe $ENV_NAME --organization=$ORG_NAME 2>&1 >/dev/null
+gcloud alpha apigee environments describe $ENV_NAME --organization=$ORG_NAME | wc -l 2>&1 >/dev/null
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
   echo "this script depends on control plane entities like org, env and envgroup to exist. Please create them and re-run the command"
   exit 1
 fi
 
-echo "All pre-reqs were met, proceeding with install!"
+COUNT_APIGEE_RUNTIME=$(kubectl get node --selector='cloud.google.com/gke-nodepool=apigee-runtime' | wc -l)
+if [ ${COUNT_APIGEE_RUNTIME} -lt 1 ]; then
+  echo "WARNING: Kubernetes node pool for runtime wasnt detected. Looking for nodes labeled: cloud.google.com/gke-nodepool=apigee-runtime"
+fi
+
+COUNT_APIGEE_DATA=$(kubectl get node --selector='cloud.google.com/gke-nodepool=apigee-data' | wc -l)
+if [ ${COUNT_APIGEE_DATA} -lt 1 ]; then
+  echo "WARNING: Kubernetes node pool for data wasnt detected. Looking for nodes labeled: cloud.google.com/gke-nodepool=apigee-data"
+fi
+
+echo "All mandatory pre-reqs were met, proceeding with install!"
 
