@@ -28,9 +28,28 @@ patches:
       value: ^1\.${ASM_MINOR_VERSION}.*
   target:
     kind: EnvoyFilter
-    name: .*
+    name: apigee-envoyfilter
     group: networking.istio.io
     version: v1alpha3
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-xff-1-${ASM_MINOR_VERSION}
+  target:
+    kind: EnvoyFilter
+    name: apigee-xff
+    version: v1alpha3
+- patch: |-
+    - op: replace
+      path: /metadata/name
+      value: apigee-ingress-accesslog-1-${ASM_MINOR_VERSION}
+  target:
+    kind: EnvoyFilter
+    name: apigee-ingress-accesslog
+    version: v1alpha3
+
 
 resources:
 - ../../base/envoyfilters
+#- xff.yaml
+#- accesslog.yaml
