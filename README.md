@@ -143,7 +143,7 @@ NOTE: All three scripts must be edited/changed to add target image repo details 
 ### Running the script
 
 ```sh
-./bin/install.sh -o my-org -e my-env -eg my-env-group -i my-instance --cluster-name my-cluster-name --cluster-region my-cluster-region 
+./bin/install.sh -o my-org -e my-env -eg my-env-group -i my-instance --cluster-name my-cluster-name --cluster-region my-cluster-region
 ```
 
 ## Kustomize
@@ -378,6 +378,7 @@ resources:
 - ../../base/envoyfilters
 #- xff.yaml
 #- accesslog.yaml
+#- edge-proxy.yaml
 ```
 
 ### Other considerations
