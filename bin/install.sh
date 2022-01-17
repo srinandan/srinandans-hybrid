@@ -82,3 +82,8 @@ kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
 
 rm ${APIGEE_HOME}/bin/asmcli
+
+echo "Installation completed successfully!"
+EXTERNAL_IP=$(kubectl get svc -n apigee apigee-istio-ingressgateway --output jsonpath='{.status.loadBalancer.ingress[0].ip}' | xargs)
+EXTERNAL_HOST_NAME="api."${ORG_NAME}".example"
+echo "If the ingress configurations were not customized, you can test your API call with this: curl -kv https://${EXTERNAL_HOST_NAME} --resolve \"${EXTERNAL_HOST_NAME}:443:${EXTERNAL_IP}\""
