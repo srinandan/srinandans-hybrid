@@ -88,6 +88,7 @@ rm ${APIGEE_HOME}/bin/asmcli
 . ${APIGEE_HOME}/bin/workloadIdentity.sh
 
 # step 13: Wait for environments to be ready
+echo "Waiting for Apigee Environment "${ENV_NAME}" to be ready"
 kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 
 echo "Installation completed successfully!"
