@@ -94,12 +94,9 @@ The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV
 
 ## Installation
 
-The default installation process uses workload identity. If you are going to use the default installation process, please ensure the following steps are completed:
+The default installation process uses workload identity. If you are going to use the default installation process, a Google Service Account called `apigee` will be created and assigned appropriate roles.
 
-1. A Google Service Account called `apigee` exists. If you have a different GSA, please update the vars.sh file.
-2. The GSA has all necessary roles assigned.
-
-This installation assumes GKE. However, all the steps with the exception of ASM are identical when running outside GKE. Please see this [link](https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks) for instructions on how to change ASM install for other platforms.
+This default installation assumes GKE. However, all the steps with the exception of ASM are identical when running outside GKE. Please see this [link](https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks) for instructions on how to change ASM install for other platforms.
 
 ### Managing access to the control plane
 
@@ -110,20 +107,6 @@ This installation supports two models to authenticate and authorize access to th
 #### Workload Identity
 
 This method is only supported on GKE. This is enabled through the `workload-identity` kustomize component. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
-
-Create a GSA
-
-```sh
-gcloud iam service-accounts create apigee --display-name="apigee" --project=${PROJECT_ID}
-```
-
-Here is a helper command to associate KSA with GSA
-
-```sh
-kubectl get sa -n apigee | grep apigee | awk '{print $1}' | while read line ; do gcloud iam service-accounts add-iam-policy-binding --role roles/iam.workloadIdentityUser --member "serviceAccount:$PROJECT_ID.svc.id.goog[apigee/$line]" $GSA@$PROJECT_ID.iam.gserviceaccount.com --project=${PROJECT_ID} ; done
-```
-
-NOTE: This command will only work **after** the installation process is complete. It requires the KSAs to already exist.
 
 #### Google Service Accounts
 

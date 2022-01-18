@@ -175,7 +175,8 @@ fi
 
 GSA_CHECK=$(gcloud iam service-accounts list --project ${PROJECT_ID} --filter=email=${GSA}@${PROJECT_ID}.iam.gserviceaccount.com | grep apigee | wc -l)
 if [ ${GSA_CHECK} -lt 1 ]; then
-  echo "WARNING: A Google Service Account called "${GSA} " was not found in the project. Workload Identity is enabled by default. This install can fail"
+  echo "WARNING: A Google Service Account called "${GSA} " was not found in the project. Workload Identity is enabled by default. This install can fail, attempting to create it"
+  gcloud iam service-accounts create apigee --display-name="apigee" --project=${PROJECT_ID}
 fi
 
 echo "All mandatory pre-reqs were met, proceeding with install!"

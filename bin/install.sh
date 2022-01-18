@@ -76,12 +76,19 @@ kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeor
 . ${APIGEE_HOME}/bin/generateEnvKustomize.sh
 
 # step 10: install the apigee environment
-kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
+kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 
 # step 11: Enable Apigee envoyfilters for ASM
 kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
 
+# clean up asmcli
 rm ${APIGEE_HOME}/bin/asmcli
+
+# step 12: This step associates GSA with KSA and adds workloadIdentityUser role to the GSA. If not using workload identity, skip the step
+. ${APIGEE_HOME}/bin/workloadIdentity.sh
+
+# step 13: Wait for environments to be ready
+kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 
 echo "Installation completed successfully!"
 EXTERNAL_IP=$(kubectl get svc -n apigee apigee-istio-ingressgateway --output jsonpath='{.status.loadBalancer.ingress[0].ip}' | xargs)
