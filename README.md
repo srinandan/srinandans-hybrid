@@ -94,7 +94,12 @@ The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV
 
 ## Installation
 
-Follow the instructions in [install.sh](./bin/install.sh). This installation assumes GKE. However, all the steps with the exception of ASM are identical when running outside GKE. Please see this [link](https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks) for instructions on how to change ASM install for other platforms.
+The default installation process uses workload identity. If you are going to use the default installation process, please ensure the following steps are completed:
+
+1. A Google Service Account called `apigee` exists. If you have a different GSA, please update the vars.sh file.
+2. The GSA has all necessary roles assigned.
+
+This installation assumes GKE. However, all the steps with the exception of ASM are identical when running outside GKE. Please see this [link](https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks) for instructions on how to change ASM install for other platforms.
 
 ### Managing access to the control plane
 
@@ -105,6 +110,12 @@ This installation supports two models to authenticate and authorize access to th
 #### Workload Identity
 
 This method is only supported on GKE. This is enabled through the `workload-identity` kustomize component. This installation process only supports one Google service account (GSA) to be mapped to the Kubernetes service accounts (KSA). If you want multiple GSAs mapped to KSAs, then it will have to be done manually (i.e., edit the namespace annotation). When using workload identity set the env variable `GSA` to the Google Service Account name.
+
+Create a GSA
+
+```sh
+gcloud iam service-accounts create apigee --display-name="apigee" --project=${PROJECT_ID}
+```
 
 Here is a helper command to associate KSA with GSA
 
@@ -140,7 +151,7 @@ There are three helper scripts to download images from GCR (and Quay in the case
 
 NOTE: All three scripts must be edited/changed to add target image repo details before use.
 
-### Running the script
+### Running the install script
 
 ```sh
 ./bin/install.sh -o my-org -e my-env -eg my-env-group -i my-instance --cluster-name my-cluster-name --cluster-region my-cluster-region

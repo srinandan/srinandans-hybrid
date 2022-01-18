@@ -173,5 +173,10 @@ if [ ${COUNT_APIGEE_DATA} -lt 1 ]; then
   echo "WARNING: Kubernetes node pool for data wasnt detected. Looking for nodes labeled: cloud.google.com/gke-nodepool=apigee-data"
 fi
 
+GSA_CHECK=$(gcloud iam service-accounts list --project ${PROJECT_ID} --filter=email=${GSA}@${PROJECT_ID}.iam.gserviceaccount.com | grep apigee | wc -l)
+if [ ${GSA_CHECK} -lt 1 ]; then
+  echo "WARNING: A Google Service Account called "${GSA} " was not found in the project. Workload Identity is enabled by default. This install can fail"
+fi
+
 echo "All mandatory pre-reqs were met, proceeding with install!"
 
