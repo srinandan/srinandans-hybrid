@@ -25,3 +25,38 @@ export INSTANCE_ID=instance1
 export ORG_NAME=srinandans-hybrid
 export ENV_NAME=prod1
 export ENV_GROUP=default
+
+export VERSION=${APIGEE_VERSION//./}
+export UC_ORG_NAME=$(echo "${ORG_NAME}" | awk '{print toupper($0)}')
+
+orglen=${#ORG_NAME}
+
+ORGHASH=$(printf "$ORG_NAME" | openssl dgst -sha256 | awk '{print $2}' | cut -c1-7)
+
+if [[ orglen -gt 15 ]]; then
+  ORGSHORTNAME=`echo $ORG_NAME | cut -c1-15`
+else
+  ORGSHORTNAME=$ORG_NAME
+fi
+
+export ORG=$ORGSHORTNAME-$ORGHASH
+
+export UC_ENV_NAME=$(echo "${ENV_NAME}" | awk '{print toupper($0)}')
+
+orglen=${#ORG_NAME}
+
+ORGHASH=$(printf "$ORG_NAME" | openssl dgst -sha256 | awk '{print $2}' | cut -c1-7)
+
+export ORG=$ORGSHORTNAME-$ORGHASH
+
+FULLNAME=$ORG_NAME:$ENV_NAME
+envlen=${#ENV_NAME}
+ENVHASH=$(printf "$FULLNAME" | openssl dgst -sha256 | awk '{print $2}' | cut -c1-7)
+
+if [[ envlen -gt 15 ]]; then
+  ENVSHORTNAME=`echo $ENV_NAME | cut -c1-15`
+else
+  ENVSHORTNAME=$ENV_NAME
+fi
+
+export ENV=$ORGSHORTNAME-$ENVSHORTNAME-$ENVHASH

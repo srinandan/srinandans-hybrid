@@ -17,14 +17,12 @@ kind: Deployment
 metadata:
   name: apigee-controller-manager
 spec:
+  selector:
+    matchLabels:
+      control-plane: controller-manager
   template:
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: cloud.google.com/gke-nodepool
-                operator: In
-                values:
-                - apigee-runtime
+    metadata:
+      labels:
+        apigee.cloud.google.com/platform: apigee
+        app: apigee-controller
+        control-plane: controller-manager
