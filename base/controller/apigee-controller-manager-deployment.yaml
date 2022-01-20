@@ -37,8 +37,6 @@ spec:
         runAsNonRoot: true
         runAsGroup: 998
         runAsUser: 999
-      imagePullSecrets:
-      - name: gcrsecret
       containers:
       - args:
         - --secure-listen-address=0.0.0.0:8443
