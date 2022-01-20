@@ -13,21 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#export CLUSTER_REGION=us-west1
-#export CLUSTER_NAME=srinandans-hybrid
-#export PROJECT_ID=$(gcloud config get-value project)
 export ASM_MINOR_VERSION=12
-
 export HUB=gcr.io/apigee-release/hybrid
-#export APIGEE_VERSION=1.6.3
 
-#export INSTANCE_ID=instance1
 
 # Google service account name
 export GSA=apigee
 
-#export ORG_NAME=$PROJECT_ID
-#export ENV_GROUP=default
+export APIGEE_RUNTIME_NP_KEY="cloud.google.com/gke-nodepool"
+export APIGEE_RUNTIME_NP_VALUE="apigee-runtime"
+
+export APIGEE_DATA_NP_KEY="cloud.google.com/gke-nodepool"
+export APIGEE_DATA_NP_VALUE="apigee-data"
 
 #if cassandra backup is enabled, uncomment this
 #export GCS_BUCKET=my-bucket

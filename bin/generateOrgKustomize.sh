@@ -43,4 +43,11 @@ envsubst < ${APIGEE_HOME}/overlays/templates/instance-kustomization.tmpl > ${API
 # generate configuration for envoy filters
 envsubst < ${APIGEE_HOME}/overlays/templates/envoyfilters-kustomization.tmpl > ${APIGEE_HOME}/overlays/envoyfilters/kustomization.yaml
 
+# generate templates for node selector
+# envsubst < ${APIGEE_HOME}/overlays/templates/cass-nodeselector.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/node-selector/cass-nodeselector.yaml
+# envsubst < ${APIGEE_HOME}/overlays/templates/istio-nodeselector.tmpl ${APIGEE_HOME}/overlays/${INSTANCE_ID}/node-selector/istio-nodeselector.yaml
+# envsubst < ${APIGEE_HOME}/overlays/templates/org-nodeselector.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/node-selector/org-nodeselector.yaml
+# envsubst < ${APIGEE_HOME}/overlays/templates/redis-nodeselector.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/node-selector/redis-nodeselector.yaml
+# envsubst < ${APIGEE_HOME}/overlays/templates/tele-nodeselector.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/node-selector/tele-nodeselector.yaml
+
 #kustomize build ${APIGEE_HOME}/overlays/${INSTANCE_ID} -o ${INSTANCE_ID}.yaml

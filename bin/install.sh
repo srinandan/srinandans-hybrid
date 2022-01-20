@@ -51,7 +51,7 @@ CERT_MANAGER_CHECK=$(kubectl get pods -n cert-manager --field-selector=status.ph
 if [ $CERT_MANAGER_CHECK -gt 0 ]; then
   echo "Cert Manager is already installed, skipping install"
 else
-  helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.5.2 --set installCRDs=true --set nodeSelector."cloud\.google\.com/gke-nodepool"=apigee-runtime && kubectl wait deployments/cert-manager -n cert-manager --for condition=available --timeout 60s
+  helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.5.2 --set installCRDs=true --set nodeSelector."cloud\.google\.com/gke-nodepool"=${APIGEE_RUNTIME_NP_VALUE} && kubectl wait deployments/cert-manager -n cert-manager --for condition=available --timeout 60s
 fi
 
 # step 3: install asm
