@@ -29,7 +29,8 @@ usage() {
         "-i --instance    : Apigee instance name (optional parameter; defaults to instance1)\n" \
         "-v --apigeever   : Apigee hybrid version; defaults to 1.6.3\n" \
         "--cluster-name   : Kubernetes cluster name\n" \
-        "--cluster-region : Kubernetes cluster region"
+        "--cluster-region : Kubernetes cluster region\n" \
+        "--skip-asm       : Skip installing ASM"
     exit 1
 }
 
@@ -74,6 +75,11 @@ do
         ;;
         --cluster-region)
         export CLUSTER_REGION="$2"
+        shift
+        shift
+        ;;
+        --skip-asm)
+        export SKIP_ASM="YES"
         shift
         shift
         ;;

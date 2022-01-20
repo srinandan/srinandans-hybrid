@@ -21,10 +21,24 @@ export APIGEE_HOME=$(pwd)
 # validate prerequisites
 . ${APIGEE_HOME}/bin/validate.sh "$@"
 
+# validate prerequisites for expanding region
+. ${APIGEE_HOME}/bin/validate-expand.sh
+
 # initalize other variables
 source ${APIGEE_HOME}/bin/vars.sh
 
-# step 1. install cert manager
+# step 1: prepare the kustomize files
+. ${APIGEE_HOME}/bin/generateMultiRegionKustomize.sh
+
+echo "Kustomize manifest files for multi-region generated. "
+read -p "Do you wish to process with the installation? Select No if you wish to change default Kustomize settings:  " -n 1 -r
+echo  ""
+if [[ ! $REPLY =~ ^[Yy]$ ]]
+then
+    exit 1
+fi
+
+# step 2. install cert manager
 helm repo add jetstack https://charts.jetstack.io && helm repo update
 
 CERT_MANAGER_CHECK=$(helm list -n cert-manager | grep deployed | grep cert-manager | wc -l)
@@ -35,18 +49,25 @@ else
 loud\.google\.com/gke-nodepool"=apigee-runtime && kubectl wait deployments/cert-manager -n cert-manager --for condition=available --timeout 60s
 fi
 
-# step 2: install asm
-curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > ${APIGEE_HOME}/bin/asmcli
+# step 3: install asm
+# These instructions are for GKE. If installing on another platform, see here: https://cloud.google.com/service-mesh/docs/unified-install/install#amazon-eks
 
-chmod +x ${APIGEE_HOME}/bin/asmcli
+if [[ -z $SKIP_ASM ]]; then
+    curl https://storage.googleapis.com/csm-artifacts/asm/asmcli_1.12 > ${APIGEE_HOME}/bin/asmcli
 
-. ${APIGEE_HOME}/bin/asmcli install \
-  --project_id ${PROJECT_ID} \
-  --cluster_name ${CLUSTER_NAME} \
-  --cluster_location ${CLUSTER_REGION} \
-  --fleet_id ${PROJECT_ID} \
-  --enable_all \
-  --ca mesh_ca
+    chmod +x ${APIGEE_HOME}/bin/asmcli
+
+    . ${APIGEE_HOME}/bin/asmcli install \
+    --project_id ${PROJECT_ID} \
+    --cluster_name ${CLUSTER_NAME} \
+    --cluster_location ${CLUSTER_REGION} \
+    --fleet_id ${PROJECT_ID} \
+    --enable_all \
+    --ca mesh_ca
+
+    # clean up asmcli
+    rm ${APIGEE_HOME}/bin/asmcli
+fi
 
 # step 3: Create Apigee CA
 #
@@ -62,16 +83,13 @@ kubectl apply -f ${APIGEE_HOME}/cluster
 # step 6: install apigee controller. Controller kustomize scripts were already created.
 kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
 
-# step 7: Generate kustomize for expnding Cassandra
-. ${APIGEE_HOME}/bin/generateMultiRegionKustomize.sh
-
-# step 8: install apigee runtime instance (datastore, telemetry, redis and org)
+# step 7: install apigee runtime instance (datastore, telemetry, redis and org)
 kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
 
-# step 9: install the apigee environment
+# step 8: install the apigee environment
 kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME} && kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 
-# step 10: Enable Apigee envoyfilters for ASM
+# step 9: Enable Apigee envoyfilters for ASM
 kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
 
-rm ${APIGEE_HOME}/bin/asmcli
+echo "Installation completed successfully!"
