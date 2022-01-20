@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - apigee-cassandra-backup-sa.yaml
-  - apigee-cassandra-backup-tls-certificate.yaml
-  - apigee-cassandra-restore-sa.yaml
-  - apigee-cassandra-restore-tls-certificate.yaml
-  - apigee-redis-default-sa-sa.yaml
-  - apigee-redis-envoy-default-sa-sa.yaml
-  - apigee-datastore-default-sa-sa.yaml
-  - default-apigeedatastore.yaml
-  - default-apigeeredis.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: apigee-cassandra-restore
