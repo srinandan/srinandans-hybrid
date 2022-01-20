@@ -17,6 +17,7 @@ export CLUSTER_REGION=us-west1
 export CLUSTER_NAME=srinandans-hybrid
 export PROJECT_ID=nandanks-151422
 export ASM_MINOR_VERSION=12
+export GSA=apigee
 
 export HUB=gcr.io/apigee-release/hybrid
 export APIGEE_VERSION=1.6.3

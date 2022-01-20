@@ -74,16 +74,6 @@ spec:
         runAsGroup: 101
         privileged: false
       podServiceAccountName: apigee-redis-envoy-default-sa
-      nodeAffinityRequired: true
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: cloud.google.com/gke-nodepool
-              operator: In
-              values:
-              - apigee-runtime
-      version: "163"
       autoScaler:
         minReplicas: 1
         maxReplicas: 1

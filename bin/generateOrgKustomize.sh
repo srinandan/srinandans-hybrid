@@ -26,6 +26,7 @@ envsubst < ${APIGEE_HOME}/overlays/templates/org-multi-gsa-kustomization.tmpl > 
 envsubst < ${APIGEE_HOME}/overlays/templates/org-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/google-service-accounts/org.yaml
 envsubst < ${APIGEE_HOME}/overlays/templates/org-gsa.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/multi-google-service-accounts/org.yaml
 envsubst < ${APIGEE_HOME}/overlays/templates/metrics.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/metrics/metrics.yaml
+envsubst < ${APIGEE_HOME}/overlays/templates/redis.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/redis.yaml
 
 #if Cassandra backup is enabled, uncomment this
 #envsubst < ${APIGEE_HOME}/overlays/templates/apigee-cassandra-backup-cronjob.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/cass-backup/apigee-cassandra-backup-cronjob.yaml
