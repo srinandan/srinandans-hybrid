@@ -18,11 +18,11 @@ set -e
 # path to the folder containing the scripts
 export APIGEE_HOME=$(pwd)
 
-# validate prerequisites
-. ${APIGEE_HOME}/bin/validate.sh "$@"
-
 # initalize other variables
 source ${APIGEE_HOME}/bin/vars.sh
+
+# validate prerequisites
+. ${APIGEE_HOME}/bin/validate.sh "$@"
 
 # step 1: prepare the kustomize files
 
@@ -75,32 +75,24 @@ if [[ -z $SKIP_ASM ]]; then
 fi
 
 # step 4: install CA cert in primary region only
-kubectl apply -f ${APIGEE_HOME}/cluster/apigee-selfsigned-clusterissuer.yaml && kubectl wait clusterissuer/selfsigned --for condition=ready --timeout=60s
+if [[ -z $EXPAND_REGION ]]; then
+  kubectl apply -f ${APIGEE_HOME}/cluster/apigee-selfsigned-clusterissuer.yaml && kubectl wait clusterissuer/selfsigned --for condition=ready --timeout=60s
 
-kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
+  kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
+else
+  # NOTE: Before running this command, obtian the keys from get-tls-keys.sh
+  kubectl create secret tls apigee-ca -n cert-manager --cert=tls.crt --key=tls.key
+fi
 
-# step 5: install crds
-kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
+# step 5: install the kustomize manifests
+. ${APIGEE_HOME}/bin/installKustomize.sh
 
-# step 6: create cluster resources
-kubectl apply -f ${APIGEE_HOME}/cluster
+# step 6: This step associates GSA with KSA and adds workloadIdentityUser role to the GSA. If not using workload identity, skip the step
+if [[ -z $NO_WORKLOAD_IDENTITY ]]; then
+  . ${APIGEE_HOME}/bin/workloadIdentity.sh
+fi
 
-# step 7: install apigee controller
-kubectl apply -k ${APIGEE_HOME}/overlays/controller && kubectl wait deployments/apigee-controller-manager --for condition=available -n apigee-system --timeout=60s
-
-# step 8: install apigee runtime instance (datastore, telemetry, redis and org)
-kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID} && kubectl wait apigeeorganizations/${ORG} -n apigee --for=jsonpath='{.status.state}'=running --timeout 300s
-
-# step 9: install the apigee environment
-kubectl apply -k ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
-
-# step 10: Enable Apigee envoyfilters for ASM
-kubectl apply -k ${APIGEE_HOME}/overlays/envoyfilters
-
-# step 11: This step associates GSA with KSA and adds workloadIdentityUser role to the GSA. If not using workload identity, skip the step
-. ${APIGEE_HOME}/bin/workloadIdentity.sh
-
-# step 12: Wait for environments to be ready
+# step 7: Wait for environments to be ready
 echo "Waiting for Apigee Environment "${ENV_NAME}" to be ready"
 kubectl wait apigeeenvironments/${ENV} -n apigee --for=jsonpath='{.status.state}'=running --timeout 120s
 

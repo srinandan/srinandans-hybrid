@@ -15,6 +15,14 @@
 
 #source vars.sh
 
+if [[ -z $APIGEE_HOME ]]; then
+    echo "APIGEE_HOME not set. Set the variable and re-run"
+fi
+
+if [[ -z $INSTANCE_ID ]]; then
+    echo "INSTANCE_ID not set. Set the variable and re-run"
+fi
+
 mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}
 cp -r ${APIGEE_HOME}/overlays/org-components/* ${APIGEE_HOME}/overlays/${INSTANCE_ID}/
 

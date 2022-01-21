@@ -13,6 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+if [[ -z $APIGEE_HOME ]]; then
+    echo "APIGEE_HOME not set. Set the variable and re-run"
+fi
+
+if [[ -z $INSTANCE_ID ]]; then
+    echo "INSTANCE_ID not set. Set the variable and re-run"
+fi
+
+if [[ -z $ENV_NAME ]]; then
+    echo "ENV_NAME not set. Set the variable and re-run"
+fi
+
 mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}
 cp -r ${APIGEE_HOME}/overlays/env-components/* ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/
 

@@ -30,7 +30,9 @@ usage() {
         "-v --apigeever   : Apigee hybrid version; defaults to 1.6.3\n" \
         "--cluster-name   : Kubernetes cluster name\n" \
         "--cluster-region : Kubernetes cluster region\n" \
-        "--skip-asm       : Skip installing ASM"
+        "--skip-asm       : Skip installing ASM\n" \
+        "--expand-region  : Expand an Apigee organization to another region\n" \
+        "--no-workload-identity: Skip steps for workload identity"
     exit 1
 }
 
@@ -81,6 +83,13 @@ do
         --skip-asm)
         export SKIP_ASM="YES"
         shift
+        ;;
+        --no-workload-identity)
+        export NO_WORKLOAD_IDENTITY="YES"
+        shift
+        ;;
+        --expand-region)
+        export EXPAND_REGION="YES"
         shift
         ;;
         *)

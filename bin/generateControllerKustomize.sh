@@ -15,6 +15,10 @@
 
 #source vars.sh
 
+if [[ -z $APIGEE_HOME ]]; then
+    echo "APIGEE_HOME not set. Set the variable and re-run"
+fi
+
 envsubst < ${APIGEE_HOME}/overlays/templates/controller-kustomization.tmpl > ${APIGEE_HOME}/overlays/controller/kustomization.yaml
 
 #kustomize build overlays/controller -o controller.yaml

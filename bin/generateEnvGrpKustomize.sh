@@ -13,6 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [[ -z $INSTANCE_ID ]]; then
+    echo "INSTANCE_ID not set. Set the variable and re-run"
+fi
+
+if [[ -z $APIGEE_HOME ]]; then
+    echo "APIGEE_HOME not set. Set the variable and re-run"
+fi
+
+if [[ -z $ENV_GROUP ]]; then
+    echo "ENV_GROUP not set. Set the variable and re-run"
+fi
+
+
 # run one per env group
 mkdir -p ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}
 cp ${APIGEE_HOME}/overlays/templates/envgroup-kustomization.yaml ${APIGEE_HOME}/overlays/${INSTANCE_ID}/envgroups/${ENV_GROUP}/kustomization.yaml
