@@ -15,6 +15,6 @@
 
 #source vars.sh
 
-envsubst < templates/terraform.tmpl > terraform.tfvars
+envsubst < ../templates/gke-terraform.tmpl > terraform.tfvars
 
 
