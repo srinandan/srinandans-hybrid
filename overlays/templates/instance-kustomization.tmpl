@@ -51,6 +51,12 @@ patches:
     kind: ApigeeOrganization
     name: .*
     version: v1alpha2
+- path: redis.yaml
+  target:
+    group: apigee.cloud.google.com
+    kind: ApigeeRedis
+    name: .*
+    version: v1alpha1
 - patch: |-
     - op: replace
       path: /metadata/name

@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,15 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - apigee-cassandra-backup-sa.yaml
-  - apigee-cassandra-backup-tls-certificate.yaml
-  - apigee-cassandra-restore-sa.yaml
-  - apigee-cassandra-restore-tls-certificate.yaml
-  - apigee-redis-default-sa-sa.yaml
-  - apigee-redis-envoy-default-sa-sa.yaml
-  - apigee-datastore-default-sa-sa.yaml
-  - default-apigeedatastore.yaml
-  - default-apigeeredis.yaml
+apiVersion:  cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: apigee-cassandra-restore-tls
+spec:
+  secretName: apigee-cassandra-restore-tls
+
+  duration: 87600h
+  issuerRef:
+    name: apigee-ca-issuer
+    kind: ClusterIssuer
+  commonName: apigee-cassandra-restore
+  dnsNames:
+  - apigee-cassandra-restore
+  - apigee-cassandra-restore.apigee
+  - apigee-cassandra-restore.apigee.svc.cluster.local
+  usages:
+    - client auth

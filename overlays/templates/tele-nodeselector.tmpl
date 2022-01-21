@@ -12,29 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+kind: ApigeeTelemetry
 apiVersion: apigee.cloud.google.com/v1alpha1
-kind: ApigeeRedis
 metadata:
-  name: default
+  name: apigee-telemetry
 spec:
   components:
-    redis:
-      nodeAffinityRequired: true
+    metrics:
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: cloud.google.com/gke-nodepool
+            - key: ${APIGEE_RUNTIME_NP_KEY}
               operator: In
               values:
-              - apigee-runtime
-    redisEnvoy:
-      nodeAffinityRequired: true
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: cloud.google.com/gke-nodepool
-              operator: In
-              values:
-              - apigee-runtime
+              - ${APIGEE_RUNTIME_NP_VALUE}

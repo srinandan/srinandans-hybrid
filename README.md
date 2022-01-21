@@ -91,6 +91,10 @@ The folders `./overlays/<INSTANCE>` and `./overlays/<INSTANCE>/environments/<ENV
 * `HUB`: The image repository, defaults to GCR
 * `APIGEE_VERSION`: The Apigee hybrid version to install. Defaults to 1.6.3
 * `GCS_BUCKET`: If Cassandra backup is enabled, then the GCS bucket name. Non-GCS backup is not available
+* `APIGEE_RUNTIME_NP_KEY`: Kubernetes node pool selector name for runtime
+* `APIGEE_RUNTIME_NP_VALUE`: default = apigee-runtime
+* `APIGEE_DATA_NP_KEY`: Kubernetes node pool selector name for datastore
+* `APIGEE_DATA_NP_VALUE`: default = apigee-data
 
 ## Installation
 

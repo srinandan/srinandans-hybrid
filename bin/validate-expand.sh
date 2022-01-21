@@ -1,4 +1,5 @@
-# Copyright 2021 Google LLC
+#!/bin/bash
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,19 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: v1
-kind: Deployment
-metadata:
-  name: org
-spec:
-  template:
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: cloud.google.com/gke-nodepool
-                operator: In
-                values:
-                - apigee-runtime
+
+if [[ -z $SEED_HOST ]]; then
+  echo "SEED_HOST must be set in vars.sh when expanding Apigee to a new region"
+  exit 1
+fi
+
+if [[ -z $DATA_CENTER ]]; then
+  echo "DATA_CENTER must be set in vars.sh when expanding Apigee to a new region"
+  exit 1
+fi

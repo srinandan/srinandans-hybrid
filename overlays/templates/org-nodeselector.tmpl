@@ -24,57 +24,57 @@ spec:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     cassandraSchemaSetup:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     connectAgent:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     watcher:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     mart:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     udca:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}

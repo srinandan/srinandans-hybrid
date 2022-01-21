@@ -24,27 +24,27 @@ spec:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     udca:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}
     runtime:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
             - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
+                - key: ${APIGEE_RUNTIME_NP_KEY}
                   operator: In
                   values:
-                    - apigee-runtime
+                    - ${APIGEE_RUNTIME_NP_VALUE}

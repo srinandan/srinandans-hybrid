@@ -1,0 +1,14 @@
+apiVersion: apigee.cloud.google.com/v1alpha1
+kind: ApigeeRedis
+metadata:
+  name: default
+  labels:
+    apigee.cloud.google.com/platform: apigee
+release:
+  forceUpdate: true
+spec:
+  name: default
+  credentialRef: apigee-redis-default-creds
+  components:
+    redisEnvoy:
+      version: "${VERSION}" 

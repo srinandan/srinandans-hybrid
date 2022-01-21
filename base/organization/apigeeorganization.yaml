@@ -188,15 +188,6 @@ spec:
         runAsGroup: 998
         privileged: false
       podServiceAccountName: apigee-udca-org-sa
-      nodeAffinityRequired: true
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-            - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
-                  operator: In
-                  values:
-                    - apigee-runtime
       autoScaler:
         minReplicas: 1
         maxReplicas: 1

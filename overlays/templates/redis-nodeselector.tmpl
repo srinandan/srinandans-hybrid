@@ -13,28 +13,28 @@
 # limitations under the License.
 
 apiVersion: apigee.cloud.google.com/v1alpha1
-kind: ApigeeDatastore
+kind: ApigeeRedis
 metadata:
   name: default
 spec:
   components:
-    removeDc:
+    redis:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
-            - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
-                  operator: In
-                  values:
-                    - apigee-runtime
-    cassandra:
+          - matchExpressions:
+            - key: ${APIGEE_RUNTIME_NP_KEY}
+              operator: In
+              values:
+              - ${APIGEE_RUNTIME_NP_VALUE}
+    redisEnvoy:
       nodeAffinityRequired: true
       nodeAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
-            - matchExpressions:
-                - key: cloud.google.com/gke-nodepool
-                  operator: In
-                  values:
-                    - apigee-data
+          - matchExpressions:
+            - key: ${APIGEE_RUNTIME_NP_KEY}
+              operator: In
+              values:
+              - ${APIGEE_RUNTIME_NP_VALUE}

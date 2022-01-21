@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-kind: ApigeeTelemetry
-apiVersion: apigee.cloud.google.com/v1alpha1
+apiVersion: v1
+kind: Deployment
 metadata:
-  name: apigee-telemetry
+  name: org
 spec:
-  components:
-    metrics:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: cloud.google.com/gke-nodepool
-              operator: In
-              values:
-              - apigee-runtime
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: ${APIGEE_RUNTIME_NP_KEY}
+                operator: In
+                values:
+                - ${APIGEE_RUNTIME_NP_VALUE}

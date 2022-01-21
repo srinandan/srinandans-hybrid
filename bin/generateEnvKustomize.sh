@@ -28,4 +28,7 @@ envsubst < ${APIGEE_HOME}/overlays/templates/env-secrets.tmpl > ${APIGEE_HOME}/o
 # disable if not using workload identity
 envsubst < ${APIGEE_HOME}/overlays/templates/annotate.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/workload-identity/annotate.yaml
 
+# generate node selector manifests
+envsubst < ${APIGEE_HOME}/overlays/templates/env-nodeselector.tmpl > ${APIGEE_HOME}/overlays/${INSTANCE_ID}/environments/${ENV_NAME}/node-selector/env-nodeselector.yaml
+
 #kustomize build overlays/instance1/environments/prod1 -o prod1.yaml

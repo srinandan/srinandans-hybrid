@@ -8,8 +8,6 @@ spec:
     spec:
       template:
         spec:
-          imagePullSecrets:
-          - name: gcrsecret
           serviceAccountName: apigee-cassandra-backup
           containers:
           - name: apigee-cassandra-backup
