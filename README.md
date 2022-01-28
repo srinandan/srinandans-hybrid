@@ -4,8 +4,8 @@ This **experimental** repo contains Kubernetes manifests for [Apigee hybrid](htt
 
 ## Prerequisites
 
-* A GKE cluster of supported version. See notes below if not using GKE.
-* Apigee control plane entities like Organization, Environment & Environment Group have been created
+* A GKE cluster of supported version. See notes below if not using GKE. If you wish to setup a GKE cluster, follow [these](./tf-modules/gke-cluster) instructions to setup a cluster via Terraform.
+* Apigee control plane entities like Organization, Environment & Environment Group have been created. If you haven't done this previously, follow [these](./tf-modules/apigee) instructions to setup these entities via Terraform.
 
 ## Folder Structure
 

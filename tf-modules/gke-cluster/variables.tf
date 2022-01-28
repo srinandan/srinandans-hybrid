@@ -27,11 +27,13 @@ variable "project_number" {
 variable "network" {
   description = "The VPC network to host the cluster in"
   type        = string
+  default     = "default"
 }
 
 variable "subnetwork" {
   description = "The subnetwork to host the cluster in"
   type        = string
+  default     = "default"
 }
 
 variable "gke_cluster_name" {
@@ -42,4 +44,5 @@ variable "gke_cluster_name" {
 variable "region" {
   description = "The region to host the cluster in"
   type        = string
+  default     = "us-west1"
 }
