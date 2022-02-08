@@ -47,7 +47,7 @@ fi
 helm repo add jetstack https://charts.jetstack.io && helm repo update
 
 # if using a custom repo, also add --set image.repository=gcr.io/myproject/cert-manager
-CERT_MANAGER_CHECK=$(kubectl get pods -n cert-manager --field-selector=status.phase=Running -l=app=cert-manager --output=jsonpath={.items..metadata.name} | xargs | wc -l)
+CERT_MANAGER_CHECK=$(kubectl get pods -n cert-manager --field-selector=status.phase=Running -l=app=cert-manager --output=jsonpath={.items..metadata.name} | grep cert-manager | xargs | wc -l)
 if [ $CERT_MANAGER_CHECK -gt 0 ]; then
   echo "Cert Manager is already installed, skipping install"
 else
