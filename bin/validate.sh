@@ -194,7 +194,7 @@ if [ ${GSA_CHECK} -lt 1 ]; then
   gcloud iam service-accounts create apigee --display-name="apigee" --project=${PROJECT_ID}
 fi
 
-DEFAULT_SC=(kubectl get sc -o=jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class)].metadata.name}' | xargs | wc -l)
+DEFAULT_SC=$(kubectl get sc -o=jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class)].metadata.name}' | xargs | wc -l)
 if [ ${DEFAULT_SC} -lt 1 ]; then
   echo "WARNING: Default storage class was not found.The default installation needs a default storage class. Interrupt the install and add a storageclass."
 fi
