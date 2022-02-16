@@ -35,6 +35,9 @@ source ${APIGEE_HOME}/bin/vars.sh
 # c: generate env kustomize manifests from templates
 . ${APIGEE_HOME}/bin/generateEnvKustomize.sh
 
+# d: generate env group kustomize manifests from templates
+. ${APIGEE_HOME}/bin/generateEnvGrpKustomize.sh
+
 echo "Kustomize manifest files generated. "
 read -p "Do you wish to process with the installation? Select No if you wish to change default Kustomize settings:  " -n 1 -r
 echo  ""
