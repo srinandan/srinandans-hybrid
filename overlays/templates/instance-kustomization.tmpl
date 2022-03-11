@@ -6,27 +6,38 @@ namespace: apigee
 
 # override the hub and tag for various hybrid versions
 images:
-- name: ${HUB}/apigee-authn-authz
+- name: gcr.io/apigee-release/hybrid/apigee-authn-authz
+  newName: ${HUB}/apigee-authn-authz
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-cassandra-backup-utility
+- name: gcr.io/apigee-release/hybrid/pigee-cassandra-backup-utility
+  newName: ${HUB}/apigee-cassandra-backup-utility
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-connect-agent
+- name: gcr.io/apigee-release/hybrid/apigee-connect-agent
+  newName: ${HUB}/apigee-connect-agent
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-envoy
+- name: gcr.io/apigee-release/hybrid/apigee-envoy
+  newName: ${HUB}/apigee-envoy
   newTag: v1.19.1
-- name: ${HUB}/apigee-hybrid-cassandra
+- name: gcr.io/apigee-release/hybrid/apigee-hybrid-cassandra
+  newName: ${HUB}/apigee-hybrid-cassandra
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-hybrid-cassandra-client
+- name: gcr.io/apigee-release/hybrid/apigee-hybrid-cassandra-client
+  newName: ${HUB}/apigee-hybrid-cassandra-client
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-mart-server
+- name: gcr.io/apigee-release/hybrid/apigee-mart-server
+  newName: ${HUB}/apigee-mart-server
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-prom-prometheus
+- name: gcr.io/apigee-release/hybrid/apigee-prom-prometheus
+  newName: ${HUB}/apigee-prom-prometheus
   newTag: v2.25.0
-- name: ${HUB}/apigee-redis
+- name: gcr.io/apigee-release/hybrid/apigee-redis
+  newName: ${HUB}/apigee-redis
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-stackdriver-logging-agent
+- name: gcr.io/apigee-release/hybrid/apigee-stackdriver-logging-agent
+  newName: ${HUB}/apigee-stackdriver-logging-agent
   newTag: 1.8.9
-- name: ${HUB}/apigee-stackdriver-prometheus-sidecar
+- name: gcr.io/apigee-release/hybrid/apigee-stackdriver-prometheus-sidecar
+  newName: ${HUB}/apigee-stackdriver-prometheus-sidecar
   newTag: 0.7.5
 
 patches:
