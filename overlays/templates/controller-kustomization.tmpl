@@ -4,9 +4,11 @@ kind: Kustomization
 namespace: apigee-system
 
 images:
-- name: ${HUB}/apigee-kube-rbac-proxy
+- name: gcr.io/apigee-release/hybrid/apigee-kube-rbac-proxy
+  newName: ${HUB}/apigee-kube-rbac-proxy
   newTag: v0.8.0
-- name: ${HUB}/apigee-operators
+- name: gcr.io/apigee-release/hybrid/apigee-operators
+  newName: ${HUB}/apigee-operators
   newTag: ${APIGEE_VERSION}
 
 patches:
