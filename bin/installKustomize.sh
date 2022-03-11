@@ -25,7 +25,10 @@ kubectl apply -f ${APIGEE_HOME}/cluster/apigee-selfsigned-clusterissuer.yaml && 
 kubectl apply -f ${APIGEE_HOME}/primary/apigee-ca-certificate.yaml && kubectl wait certificates/apigee-ca -n cert-manager --for condition=ready --timeout=60s
 
 # step 5: install crds
-kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
+CRD_COUNT=$(kubectl get crd | grep apigee | wc -l | xargs)
+if [ $CRD_COUNT -lt 9 ]; then
+  kubectl create -f ${APIGEE_HOME}/cluster/crds && kubectl wait crd/apigeeenvironments.apigee.cloud.google.com --for condition=established --timeout=60s
+fi
 
 # step 6: create cluster resources
 kubectl apply -f ${APIGEE_HOME}/cluster
