@@ -6,19 +6,26 @@ namespace: apigee
 
 # override the hub and tag for various hybrid versions
 images:
-- name: ${HUB}/apigee-authn-authz
+- name: gcr.io/apigee-release/hybrid/apigee-authn-authz
+  newName: ${HUB}/apigee-authn-authz
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-hybrid-cassandra-client
+- name: gcr.io/apigee-release/hybrid/apigee-hybrid-cassandra-client
+  newName: ${HUB}/apigee-hybrid-cassandra-client
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-runtime
+- name: gcr.io/apigee-release/hybrid/apigee-runtime
+  newName: ${HUB}/apigee-runtime
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-synchronizer
+- name: gcr.io/apigee-release/hybrid/apigee-synchronizer
+  newName: ${HUB}/apigee-synchronizer
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-udca
+- name: gcr.io/apigee-release/hybrid/apigee-udca
+  newName: ${HUB}/apigee-udca
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-mart-server
+- name: gcr.io/apigee-release/hybrid/apigee-mart-server
+  newName: ${HUB}/apigee-mart-server
   newTag: ${APIGEE_VERSION}
-- name: ${HUB}/apigee-stackdriver-logging-agent
+- name: gcr.io/apigee-release/hybrid/apigee-stackdriver-logging-agent
+  newName: ${HUB}/apigee-stackdriver-logging-agent
   newTag: 1.8.9
 
 resources:
