@@ -98,6 +98,12 @@ spec:
         - name: apigee-watcher
           image: gcr.io/apigee-release/hybrid/apigee-watcher:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - mountPath: /tmp
+            name: tmpfs
+      volumes:
+      - name: tmpfs
+        emptyDir: {}      
       properties:
         mintRecurringJobImage: ':'
     mart:
