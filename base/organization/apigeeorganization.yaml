@@ -107,6 +107,9 @@ spec:
       properties:
         mintRecurringJobImage: ':'
     mart:
+      volumes:
+      - name: apigee-mart-logs
+        emptyDir: {}    
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -156,6 +159,9 @@ spec:
         - name: apigee-mart
           image: gcr.io/apigee-release/hybrid/apigee-mart-server:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: apigee-mart-logs
+            mountPath: /opt/apigee/var/log/apigee-mart-server          
           livenessProbe:
             httpGet:
               path: /v1/probes/live
