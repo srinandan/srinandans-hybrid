@@ -25,6 +25,9 @@ spec:
   organizationRef: org
   components:
     synchronizer:
+      volumes:
+        - name: apigee-application
+          emptyDir: {}    
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -45,10 +48,16 @@ spec:
         - name: apigee-cassandra-schema-readiness
           image: gcr.io/apigee-release/hybrid/apigee-mart-server:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
       containers:
         - name: apigee-synchronizer
           image: gcr.io/apigee-release/hybrid/apigee-synchronizer:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
           livenessProbe:
             httpGet:
               path: /v1/probes/live
@@ -125,6 +134,9 @@ spec:
             limits:
               memory: 128Mi
     runtime:
+      volumes:
+        - name: apigee-application
+          emptyDir: {}    
       podServiceAccountName: apigee-runtime-env-sa
       autoScaler:
         minReplicas: 1
@@ -142,13 +154,22 @@ spec:
         - name: apigee-cassandra-schema-readiness
           image: gcr.io/apigee-release/hybrid/apigee-mart-server:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
         - name: apigee-redis-envoy-readiness
           image: gcr.io/apigee-release/hybrid/apigee-runtime:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
       containers:
         - name: apigee-runtime
           image: gcr.io/apigee-release/hybrid/apigee-runtime:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
           livenessProbe:
             httpGet:
               path: /v1/probes/live

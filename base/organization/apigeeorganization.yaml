@@ -50,6 +50,9 @@ spec:
           image: gcr.io/apigee-release/hybrid/apigee-hybrid-cassandra-client:1.6.3
           imagePullPolicy: IfNotPresent
     cassandraSchemaSetup:
+      volumes:
+        - name: apigee-application
+          emptyDir: {}
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -64,6 +67,9 @@ spec:
         - name: apigee-cassandra-schema-setup
           image: gcr.io/apigee-release/hybrid/apigee-mart-server:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application
     connectAgent:
       podServiceAccountName: apigee-connect-agent-org-sa
       autoScaler:
@@ -107,6 +113,9 @@ spec:
       properties:
         mintRecurringJobImage: ':'
     mart:
+      volumes:
+        - name: apigee-application
+          emptyDir: {}    
       securityContext:
         runAsNonRoot: true
         runAsUser: 999
@@ -127,10 +136,16 @@ spec:
         - name: apigee-cassandra-schema-readiness
           image: gcr.io/apigee-release/hybrid/apigee-mart-server:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
       containers:
         - name: apigee-authz
           image: gcr.io/apigee-release/hybrid/apigee-authn-authz:1.6.3
           imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: apigee-application
+              mountPath: /application          
           resources:
             requests:
               cpu: 25m
