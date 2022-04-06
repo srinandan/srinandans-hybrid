@@ -26,6 +26,7 @@ spec:
   components:
     synchronizer:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
@@ -75,6 +76,7 @@ spec:
               memory: 256Mi
     udca:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
@@ -125,6 +127,12 @@ spec:
             limits:
               memory: 128Mi
     runtime:
+      securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false    
       podServiceAccountName: apigee-runtime-env-sa
       autoScaler:
         minReplicas: 1

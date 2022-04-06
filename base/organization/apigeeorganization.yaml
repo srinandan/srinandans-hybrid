@@ -36,6 +36,7 @@ spec:
   components:
     cassandraUserSetup:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
@@ -51,6 +52,7 @@ spec:
           imagePullPolicy: IfNotPresent
     cassandraSchemaSetup:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
@@ -90,6 +92,12 @@ spec:
             - name: LOG_VERBOSITY_LEVEL
               value: "0"
     watcher:
+      securityContext:
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 998
+        privileged: false    
       podServiceAccountName: apigee-watcher-org-sa
       autoScaler:
         minReplicas: 1
@@ -108,6 +116,7 @@ spec:
         mintRecurringJobImage: ':'
     mart:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
@@ -189,6 +198,7 @@ spec:
               memory: 128Mi
     udca:
       securityContext:
+        readOnlyRootFilesystem: true
         runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 998
