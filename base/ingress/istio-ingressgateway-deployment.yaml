@@ -31,6 +31,11 @@ spec:
         sidecar.istio.io/inject: "true"
     spec:
       serviceAccountName: istio-ingressgateway
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1337
+        runAsGroup: 1337
+        fsGroup: 1337      
       containers:
       - name: istio-proxy
         image: auto # The image will automatically update each time the pod starts.
